@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>AetherNeural — AI Bento Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root {
+      --bg: #090b10;
+      --surface: #121622;
+      --surface-2: #181e2e;
+      --surface-hover: #1f273b;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(99, 102, 241, 0.45);
+      --text: #f3f6fc;
+      --text-muted: #8b95ad;
+      --accent: #6366f1;
+      --accent-2: #8b5cf6;
+      --cyan: #06b6d4;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --radius-xl: 22px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Inter, sans-serif;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(99, 102, 241, 0.16), transparent 42%),
+        radial-gradient(circle at 90% 10%, rgba(6, 182, 212, 0.12), transparent 40%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-top: var(--safe-top);
+      padding-bottom: calc(82px + var(--safe-bottom));
+      overflow-x: hidden;
+    }
+
+    /* HEADER */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background: rgba(9, 11, 16, 0.78);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--accent), var(--cyan));
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 16px;
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+    }
+
+    .brand-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .quota-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .quota-pill.pro {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(139, 92, 246, 0.18));
+      border-color: rgba(245, 158, 11, 0.45);
+      color: #fcd34d;
+    }
+
+    /* CONTAINER & BENTO GRID */
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .tab-view {
+      display: none;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .tab-view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 11px;
+    }
+
+    .bento-card {
+      background: linear-gradient(180deg, rgba(24, 30, 46, 0.85), rgba(18, 22, 34, 0.95));
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 15px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s ease, border-color 0.2s ease;
+    }
+
+    .bento-card:active {
+      transform: scale(0.985);
+    }
+
+    .bento-card.span-2 {
+      grid-column: span 2;
+    }
+
+    .bento-card.glow-accent {
+      border-color: var(--border-accent);
+      background:
+        radial-gradient(circle at top right, rgba(99, 102, 241, 0.22), transparent 55%),
+        linear-gradient(180deg, rgba(24, 30, 46, 0.9), rgba(18, 22, 34, 0.98));
+    }
+
+    .bento-card.glow-amber {
+      border-color: rgba(245, 158, 11, 0.42);
+      background:
+        radial-gradient(circle at top right, rgba(245, 158, 11, 0.2), transparent 55%),
+        linear-gradient(180deg, rgba(24, 30, 46, 0.9), rgba(18, 22, 34, 0.98));
+    }
+
+    .bento-card.glow-emerald {
+      border-color: rgba(16, 185, 129, 0.4);
+      background:
+        radial-gradient(circle at top right, rgba(16, 185, 129, 0.18), transparent 55%),
+        linear-gradient(180deg, rgba(24, 30, 46, 0.9), rgba(18, 22, 34, 0.98));
+    }
+
+    .card-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .card-tag.free { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .card-tag.pro { background: rgba(245, 158, 11, 0.16); color: #fbbf24; }
+    .card-tag.hot { background: rgba(244, 63, 94, 0.2); color: #fb7185; }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+
+    .card-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.42;
+    }
+
+    .stat-big {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 4px 0 2px;
+    }
+
+    /* BUTTONS & INPUTS */
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 11px 14px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 6px 18px rgba(99, 102, 241, 0.28);
+      transition: opacity 0.15s, transform 0.12s;
+    }
+
+    .btn:active { transform: scale(0.98); opacity: 0.9; }
+    .btn.secondary {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      box-shadow: none;
+      color: var(--text);
+    }
+    .btn.emerald {
+      background: linear-gradient(135deg, #059669, #10b981);
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.25);
+    }
+    .btn.amber {
+      background: linear-gradient(135deg, #d97706, #f59e0b);
+      color: #090b10;
+      box-shadow: 0 6px 18px rgba(245, 158, 11, 0.25);
+    }
+    .btn.danger {
+      background: rgba(244, 63, 94, 0.16);
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      color: #fda4af;
+      box-shadow: none;
+    }
+    .btn.sm {
+      padding: 8px 11px;
+      font-size: 12px;
+      border-radius: 10px;
+    }
+
+    .input-field {
+      width: 100%;
+      background: rgba(9, 11, 16, 0.65);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 11px 13px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-field:focus {
+      border-color: var(--accent);
+    }
+
+    /* CHAT SCREEN */
+    .chat-model-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .model-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--surface);
+      border: 1px solid var(--border-accent);
+      padding: 8px 13px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .chat-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: calc(100vh - 255px);
+      max-height: calc(100vh - 255px);
+      overflow-y: auto;
+      padding: 4px 2px 12px;
+      scroll-behavior: smooth;
+    }
+
+    .msg-bubble {
+      max-width: 88%;
+      padding: 12px 14px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.48;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .msg-bubble.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      border-bottom-right-radius: 5px;
+    }
+
+    .msg-bubble.ai {
+      align-self: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-bottom-left-radius: 5px;
+    }
+
+    .msg-meta {
+      font-size: 10.5px;
+      opacity: 0.65;
+      margin-top: 5px;
+    }
+
+    .msg-img-preview {
+      max-width: 180px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .chat-composer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: calc(64px + var(--safe-bottom));
+      background: rgba(9, 11, 16, 0.92);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border);
+      padding: 8px 12px;
+      z-index: 25;
+    }
+
+    .composer-inner {
+      max-width: 680px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .attach-preview-bar {
+      max-width: 680px;
+      margin: 0 auto 6px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface-2);
+      border: 1px solid var(--border-accent);
+      border-radius: 10px;
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      font-size: 17px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .icon-btn.send {
+      background: linear-gradient(135deg, var(--accent), var(--cyan));
+      border: none;
+    }
+
+    /* BOTTOM NAV */
+    .bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: calc(64px + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom);
+      background: rgba(12, 15, 23, 0.94);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 40;
+    }
+
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      color: var(--text-muted);
+      font-size: 10.5px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 6px 0;
+      transition: color 0.15s;
+    }
+
+    .nav-item .nav-ico {
+      font-size: 19px;
+      line-height: 1;
+    }
+
+    .nav-item.active {
+      color: #a5b4fc;
+    }
+
+    /* CHIPS & FILTERS */
+    .cat-pills {
+      display: flex;
+      gap: 7px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      scrollbar-width: none;
+    }
+    .cat-pills::-webkit-scrollbar { display: none; }
+
+    .cat-pill {
+      padding: 7px 13px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .cat-pill.active {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* MODAL */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 60;
+      padding: 12px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 520px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 18px;
+      margin-bottom: var(--safe-bottom);
+      animation: slideUp 0.2s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .toast {
+      position: fixed;
+      top: calc(64px + var(--safe-top));
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      border: 1px solid var(--border-accent);
+      color: #fff;
+      padding: 9px 16px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 600;
+      z-index: 90;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+      display: none;
+    }
+
+    .log-item {
+      background: rgba(9, 11, 16, 0.55);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      margin-top: 8px;
+      font-size: 12px;
+    }
+
+    .row-flex {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .strike {
+      text-decoration: line-through;
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="toast" class="toast"></div>
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo">Æ</div>
+      <div>
+        <div class="brand-title">AetherNeural</div>
+        <div class="brand-sub" id="topEngineBadge">Движок: GPT-6 Luna</div>
+      </div>
+    </div>
+    <div class="quota-pill" id="topQuotaPill" onclick="switchTab('shop')">
+      <span id="topQuotaText">⚡ 5/5</span>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ==================== TAB 1: AI CHAT ==================== -->
+    <section id="tab-chat" class="tab-view active">
+      <div class="chat-model-bar">
+        <button class="model-chip" onclick="switchTab('models')">
+          <span id="activeModelIcon">🤖</span>
+          <span id="activeModelName">GPT-6 Luna</span>
+          <span style="opacity:.6">▾</span>
+        </button>
+        <button class="btn secondary sm" style="width:auto" onclick="clearChatHistory()">🧹 Сброс</button>
+      </div>
+
+      <div id="chatMessages" class="chat-messages">
+        <div class="msg-bubble ai">
+          👋 Привет! Я готов к работе. Задай любой вопрос, отправь фото задачи (кнопка 📎 снизу) или выбери нужную нейросеть во вкладке «Модели».
+          <div class="msg-meta">AetherNeural • Без VPN</div>
+        </div>
+      </div>
+
+      <div class="chat-composer">
+        <div id="attachPreviewBar" class="attach-preview-bar">
+          <span id="attachFileName">📸 Фото прикреплено</span>
+          <span style="color:#fb7185;cursor:pointer;font-weight:700" onclick="clearAttachedPhoto()">✕ Убрать</span>
+        </div>
+        <div class="composer-inner">
+          <input type="file" id="photoFileInput" accept="image/*" style="display:none" onchange="handlePhotoSelected(event)" />
+          <button class="icon-btn" title="Прикрепить фото" onclick="document.getElementById('photoFileInput').click()">📎</button>
+          <input type="text" id="chatInput" class="input-field" placeholder="Спроси что угодно..." onkeydown="if(event.key==='Enter') sendChatMessage()" />
+          <button class="icon-btn send" id="sendBtn" onclick="sendChatMessage()">➤</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: MODELS (BENTO) ==================== -->
+    <section id="tab-models" class="tab-view">
+      <div class="bento-grid" style="margin-bottom:12px">
+        <div class="bento-card span-2 glow-accent">
+          <div class="card-tag" id="engineBannerTag">⚙️ ЕДИНЫЙ ДВИЖОК: GPT-6 LUNA</div>
+          <div class="card-title">Каталог нейросетей</div>
+          <div class="card-desc">Выбери модель для диалога. Базовые модели доступны бесплатно каждый день, PRO-модели открываются по подписке.</div>
+        </div>
+      </div>
+
+      <div class="cat-pills" id="modelCatPills">
+        <div class="cat-pill active" onclick="filterModels('all', this)">Все</div>
+        <div class="cat-pill" onclick="filterModels('gpt', this)">🤖 GPT</div>
+        <div class="cat-pill" onclick="filterModels('claude', this)">🧠 Claude</div>
+        <div class="cat-pill" onclick="filterModels('gemini', this)">✨ Gemini</div>
+        <div class="cat-pill" onclick="filterModels('deepseek', this)">🐋 DeepSeek</div>
+        <div class="cat-pill" onclick="filterModels('grok', this)">⚡ Grok</div>
+      </div>
+
+      <div class="bento-grid" id="modelsBentoGrid"></div>
+    </section>
+
+    <!-- ==================== TAB 3: SHOP (BENTO) ==================== -->
+    <section id="tab-shop" class="tab-view">
+      <div class="bento-grid">
+        <div class="bento-card span-2 glow-amber" id="discountBannerCard" style="display:none">
+          <div class="card-tag hot" id="discountBannerTag">🔥 СКИДКА АКТИВНА</div>
+          <div class="card-title" id="discountBannerTitle">Сниженные цены на все тарифы!</div>
+          <div class="card-desc" id="discountBannerDesc">Успей оформить подписку или пакет запросов по спеццене.</div>
+        </div>
+
+        <div class="bento-card span-2">
+          <div class="card-tag pro">👑 ПОДПИСКИ PRO</div>
+          <div class="card-title">Безлимит на все нейросети</div>
+          <div class="card-desc">Полный доступ к GPT-6, Claude 5 Opus/Sonnet, Gemini 3.1 Pro и Grok 4.6 без суточных лимитов.</div>
+        </div>
+
+        <!-- Готовые подписки -->
+        <div class="bento-card" onclick="openCheckout('prod:sub_trial')">
+          <div class="card-tag pro">1 ДЕНЬ</div>
+          <div class="card-title">Пробный</div>
+          <div class="stat-big" id="price_sub_trial">39 ₽</div>
+          <div class="card-desc" id="stars_sub_trial">или 29 ⭐</div>
+        </div>
+
+        <div class="bento-card glow-amber" onclick="openCheckout('prod:sub_standard')">
+          <div class="card-tag pro">7 ДНЕЙ • ХИТ</div>
+          <div class="card-title">Стандарт</div>
+          <div class="stat-big" id="price_sub_standard">149 ₽</div>
+          <div class="card-desc" id="stars_sub_standard">или 115 ⭐</div>
+        </div>
+
+        <div class="bento-card span-2 glow-accent" onclick="openCheckout('prod:sub_premium')">
+          <div class="row-flex" style="justify-content:space-between">
+            <div>
+              <div class="card-tag pro">30 ДНЕЙ • МАКСИМУМ</div>
+              <div class="card-title">Премиум подписка</div>
+              <div class="card-desc" id="stars_sub_premium">Выгодный месяц • 269 ⭐</div>
+            </div>
+            <div class="stat-big" id="price_sub_premium">349 ₽</div>
+          </div>
+        </div>
+
+        <!-- Кастомный срок подписки -->
+        <div class="bento-card span-2">
+          <div class="card-tag">✏️ СВОЙ СРОК (1–60 ДН.)</div>
+          <div class="row-flex" style="margin-top:6px">
+            <input type="number" id="customSubDaysInput" class="input-field" min="1" max="60" placeholder="Кол-во дней (напр. 5)" />
+            <button class="btn amber" style="width:auto;white-space:nowrap" onclick="buyCustomSub()">Купить</button>
+          </div>
+        </div>
+
+        <div class="bento-card span-2">
+          <div class="card-tag free">⚡ ПАКЕТЫ ЗАПРОСОВ</div>
+          <div class="card-title">Дополнительные запросы (не сгорают)</div>
+          <div class="card-desc">Расходуются, когда заканчивается дневной бесплатный лимит.</div>
+        </div>
+
+        <div class="bento-card" onclick="openCheckout('prod:pack_30')">
+          <div class="card-tag free">+30 ЗАПР.</div>
+          <div class="card-title">Старт</div>
+          <div class="stat-big" id="price_pack_30">99 ₽</div>
+          <div class="card-desc" id="stars_pack_30">или 79 ⭐</div>
+        </div>
+
+        <div class="bento-card" onclick="openCheckout('prod:pack_100')">
+          <div class="card-tag free">+100 ЗАПР.</div>
+          <div class="card-title">Оптима</div>
+          <div class="stat-big" id="price_pack_100">259 ₽</div>
+          <div class="card-desc" id="stars_pack_100">или 199 ⭐</div>
+        </div>
+
+        <div class="bento-card span-2" onclick="openCheckout('prod:pack_300')">
+          <div class="row-flex" style="justify-content:space-between">
+            <div>
+              <div class="card-tag free">+300 ЗАПР.</div>
+              <div class="card-title">Большой пакет</div>
+              <div class="card-desc" id="stars_pack_300">Хватит надолго • 449 ⭐</div>
+            </div>
+            <div class="stat-big" id="price_pack_300">589 ₽</div>
+          </div>
+        </div>
+
+        <!-- Кастомный пакет -->
+        <div class="bento-card span-2">
+          <div class="card-tag">✏️ СВОЙ ПАКЕТ (1–500 ЗАПР.)</div>
+          <div class="row-flex" style="margin-top:6px">
+            <input type="number" id="customPackReqsInput" class="input-field" min="1" max="500" placeholder="Кол-во запросов (от 1)" />
+            <button class="btn emerald" style="width:auto;white-space:nowrap" onclick="buyCustomPack()">Купить</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: PROFILE & PARTNER (BENTO) ==================== -->
+    <section id="tab-profile" class="tab-view">
+      <div class="bento-grid">
+        <div class="bento-card span-2 glow-accent">
+          <div class="card-tag" id="profPlanBadge">🆓 БЕСПЛАТНЫЙ ПЛАН</div>
+          <div class="card-title" id="profUserName">Пользователь</div>
+          <div class="card-desc" id="profUserId">ID: —</div>
+        </div>
+
+        <div class="bento-card">
+          <div class="card-tag free">⚡ СЕГОДНЯ</div>
+          <div class="stat-big" id="profDailyLeft">5 / 5</div>
+          <div class="card-desc">Дневной лимит</div>
+        </div>
+
+        <div class="bento-card">
+          <div class="card-tag">📦 ПАКЕТ</div>
+          <div class="stat-big" id="profExtraLeft">0</div>
+          <div class="card-desc">Доп. запросов</div>
+        </div>
+
+        <!-- Промокод -->
+        <div class="bento-card span-2">
+          <div class="card-tag">🎟 ПРОМОКОД</div>
+          <div class="card-title">Активировать бонус</div>
+          <div class="row-flex" style="margin-top:8px">
+            <input type="text" id="promoCodeInput" class="input-field" placeholder="Введи промокод..." style="text-transform:uppercase" />
+            <button class="btn" style="width:auto" onclick="activatePromo()">Активировать</button>
+          </div>
+        </div>
+
+        <!-- Партнёрка 25% -->
+        <div class="bento-card span-2 glow-emerald">
+          <div class="card-tag free">💸 ПАРТНЁРКА 25%</div>
+          <div class="card-title">Зарабатывай с приглашённых друзей</div>
+          <div class="card-desc" style="margin-bottom:10px">
+            +2 запроса в день навсегда за каждого друга и <b>25% в рублях</b> с каждой его оплаты.
+          </div>
+          <div class="bento-grid" style="margin-bottom:10px">
+            <div style="background:rgba(0,0,0,0.28);padding:10px;border-radius:12px">
+              <div style="font-size:11px;color:var(--text-muted)">Реф. баланс</div>
+              <div style="font-size:18px;font-weight:800;color:#34d399" id="profRefBalance">0.00 ₽</div>
+            </div>
+            <div style="background:rgba(0,0,0,0.28);padding:10px;border-radius:12px">
+              <div style="font-size:11px;color:var(--text-muted)">Приглашено</div>
+              <div style="font-size:18px;font-weight:800" id="profRefCount">0 чел.</div>
+            </div>
+          </div>
+          <div class="row-flex">
+            <button class="btn emerald sm" onclick="copyRefLink()">📋 Копировать ссылку</button>
+            <button class="btn secondary sm" onclick="openWithdrawModal()">💸 Вывести (от 100 ₽)</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 5: ADMIN PANEL (BENTO) ==================== -->
+    <section id="tab-admin" class="tab-view">
+      <div class="bento-grid">
+        <div class="bento-card span-2 glow-amber">
+          <div class="card-tag pro">🛠 АДМИН-ПАНЕЛЬ УПРАВЛЕНИЯ</div>
+          <div class="card-title">Настройки единого движка и акций</div>
+          <div class="card-desc">Все изменения мгновенно синхронизируются с Telegram-ботом и Mini App.</div>
+        </div>
+
+        <div class="bento-card">
+          <div class="card-tag">👥 ПОЛЬЗОВАТЕЛИ</div>
+          <div class="stat-big" id="admTotalUsers">0</div>
+          <div class="card-desc" id="admProUsers">PRO: 0</div>
+        </div>
+
+        <div class="bento-card">
+          <div class="card-tag free">💰 КАССА</div>
+          <div class="stat-big" id="admSbpRub">0 ₽</div>
+          <div class="card-desc" id="admStarsTotal">Stars: 0 ⭐</div>
+        </div>
+
+        <!-- Единый движок (Луна и др.) -->
+        <div class="bento-card span-2 glow-accent">
+          <div class="card-tag">⚙️ ЕДИНЫЙ ДВИЖОК ДЛЯ ОБЫЧНЫХ ПОЛЬЗОВАТЕЛЕЙ</div>
+          <div class="card-title">Активный движок: <code id="admCurrentEngine">gpt-6-luna</code></div>
+          <div class="card-desc" style="margin-bottom:10px">
+            Выбери модель-движок (например <b>gpt-6-luna</b>), через которую обрабатываются все запросы обычных пользователей:
+          </div>
+          <div class="row-flex" style="flex-wrap:wrap;margin-bottom:8px">
+            <button class="btn secondary sm" style="width:auto" onclick="quickSetEngine('gpt-6-luna')">gpt-6-luna</button>
+            <button class="btn secondary sm" style="width:auto" onclick="quickSetEngine('gpt-5.6-luna')">gpt-5.6-luna</button>
+            <button class="btn secondary sm" style="width:auto" onclick="quickSetEngine('gemini-3.5-flash-lite')">gemini-3.5-flash-lite</button>
+            <button class="btn secondary sm" style="width:auto" onclick="quickSetEngine('deepseek-v4-flash')">deepseek-v4-flash</button>
+          </div>
+          <div class="row-flex">
+            <input type="text" id="admEngineInput" class="input-field" placeholder="Или введи любой ID модели..." />
+            <button class="btn" style="width:auto" onclick="saveAdminEngine()">Сохранить</button>
+          </div>
+        </div>
+
+        <!-- Глобальная скидка -->
+        <div class="bento-card span-2">
+          <div class="card-tag hot">🔥 ГЛОБАЛЬНАЯ СКИДКА ДЛЯ ВСЕХ</div>
+          <div class="card-title" id="admGdiscStatus">Статус: Выключена</div>
+          <div class="row-flex" style="margin-top:8px">
+            <input type="number" id="admGdiscPct" class="input-field" min="1" max="95" placeholder="Скидка % (напр. 30)" />
+            <input type="number" id="admGdiscHours" class="input-field" min="1" max="720" placeholder="Часов (напр. 24)" />
+          </div>
+          <div class="row-flex" style="margin-top:8px">
+            <button class="btn amber sm" onclick="saveAdminGlobalDiscount()">🚀 Запустить акцию</button>
+            <button class="btn danger sm" onclick="disableAdminGlobalDiscount()">🛑 Выключить</button>
+          </div>
+        </div>
+
+        <!-- История запросов (Анти-джейлбрейк) -->
+        <div class="bento-card span-2">
+          <div class="row-flex" style="justify-content:space-between">
+            <div>
+              <div class="card-tag">📜 АУДИТ ЗАПРОСОВ</div>
+              <div class="card-title">История запросов пользователей</div>
+            </div>
+            <button class="btn secondary sm" style="width:auto" onclick="loadAdminLogs()">🔄 Обновить</button>
+          </div>
+          <div id="admLogsContainer" style="margin-top:8px">
+            <div class="card-desc">Нажми «Обновить», чтобы загрузить последние запросы...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" id="nav-chat" onclick="switchTab('chat')">
+      <span class="nav-ico">💬</span>
+      <span>Чат ИИ</span>
+    </div>
+    <div class="nav-item" id="nav-models" onclick="switchTab('models')">
+      <span class="nav-ico">🧠</span>
+      <span>Модели</span>
+    </div>
+    <div class="nav-item" id="nav-shop" onclick="switchTab('shop')">
+      <span class="nav-ico">⭐</span>
+      <span>Магазин</span>
+    </div>
+    <div class="nav-item" id="nav-profile" onclick="switchTab('profile')">
+      <span class="nav-ico">👤</span>
+      <span>Профиль</span>
+    </div>
+    <div class="nav-item" id="nav-admin" style="display:none" onclick="switchTab('admin')">
+      <span class="nav-ico">🛠</span>
+      <span>Админка</span>
+    </div>
+  </nav>
+
+  <!-- CHECKOUT MODAL -->
+  <div id="checkoutModal" class="modal-backdrop" onclick="if(event.target===this) closeModal('checkoutModal')">
+    <div class="modal-sheet">
+      <div class="card-tag pro">🛒 ОФОРМЛЕНИЕ ЗАКАЗА</div>
+      <div class="card-title" id="modalOrderTitle" style="font-size:18px;margin-bottom:4px">Тариф</div>
+      <div class="card-desc" id="modalOrderDesc" style="margin-bottom:14px">Описание тарифа</div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <button class="btn emerald" id="modalPaySbpBtn">💳 Оплатить через СБП</button>
+        <button class="btn amber" id="modalPayStarsBtn">⭐ Оплатить Telegram Stars</button>
+        <button class="btn secondary" onclick="closeModal('checkoutModal')">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WITHDRAW MODAL -->
+  <div id="withdrawModal" class="modal-backdrop" onclick="if(event.target===this) closeModal('withdrawModal')">
+    <div class="modal-sheet">
+      <div class="card-tag free">💸 ВЫВОД СРЕДСТВ</div>
+      <div class="card-title" style="font-size:18px;margin-bottom:6px">Заявка на выплату</div>
+      <div class="card-desc" style="margin-bottom:10px">Укажи номер телефона (СБП) или карты и название банка:</div>
+      <input type="text" id="withdrawReqsInput" class="input-field" placeholder="+79991234567 Т-Банк" style="margin-bottom:10px" />
+      <div class="row-flex">
+        <button class="btn emerald" onclick="submitWithdraw()">Отправить заявку</button>
+        <button class="btn secondary" onclick="closeModal('withdrawModal')">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // НАСТРОЙКА URL БЭКЕНДА (Укажи адрес твоего бота на bothost.ru или через ?api=...)
+    // =========================================================================
+    const urlParams = new URLSearchParams(window.location.search);
+    const API_BASE = (urlParams.get("api") || localStorage.getItem("aether_api_base") || "").replace(/\/$/, "");
+    if (urlParams.get("api")) {
+      localStorage.setItem("aether_api_base", API_BASE);
+    }
+
+    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      try {
+        tg.setHeaderColor("#090b10");
+        tg.setBackgroundColor("#090b10");
+      } catch (e) {}
+    }
+
+    const MODELS_CATALOG = [
+      { id: "gpt-6-luna", name: "GPT-6 Luna", cat: "gpt", icon: "🤖", pro: false, desc: "Быстрая и точная базовая модель" },
+      { id: "gpt-5.6-luna", name: "GPT-5.6 Luna", cat: "gpt", icon: "🤖", pro: false, desc: "Универсальный помощник для учёбы" },
+      { id: "gpt-5-mini", name: "GPT-5 Mini", cat: "gpt", icon: "🤖", pro: false, desc: "Лёгкая модель для быстрых ответов" },
+      { id: "gpt-5.4-mini", name: "GPT-5.4 Mini", cat: "gpt", icon: "🤖", pro: true, desc: "Улучшенная логика и код" },
+      { id: "gpt-6.1-terra", name: "GPT-6.1 Terra", cat: "gpt", icon: "🤖", pro: true, desc: "Флагман для сложных задач" },
+      { id: "gpt-6-sol", name: "GPT-6 Sol", cat: "gpt", icon: "🤖", pro: true, desc: "Глубокий анализ и рассуждения" },
+      { id: "gpt-5.3-codex", name: "GPT-5.3 Codex", cat: "gpt", icon: "💻", pro: true, desc: "Специалист по программированию" },
+      { id: "claude-haiku-5-5", name: "Claude Haiku 5.5", cat: "claude", icon: "🧠", pro: false, desc: "Живой стиль и быстрый разбор" },
+      { id: "claude-sonnet-5", name: "Claude Sonnet 5", cat: "claude", icon: "🧠", pro: true, desc: "Идеален для текстов и кода" },
+      { id: "claude-opus-5-5", name: "Claude Opus 5.5", cat: "claude", icon: "🧠", pro: true, desc: "Максимальный интеллект Anthropic" },
+      { id: "gemini-3.1-flash-lite", name: "Gemini 3.1 Flash Lite", cat: "gemini", icon: "✨", pro: false, desc: "Молниеносный разбор фото и задач" },
+      { id: "gemini-3.5-flash-lite", name: "Gemini 3.5 Flash Lite", cat: "gemini", icon: "✨", pro: false, desc: "Новое поколение Gemini Flash" },
+      { id: "gemini-3.1-pro", name: "Gemini 3.1 Pro", cat: "gemini", icon: "✨", pro: true, desc: "Мощный мультимодальный анализ" },
+      { id: "deepseek-v4-flash", name: "DeepSeek V4 Flash", cat: "deepseek", icon: "🐋", pro: false, desc: "Сильная математика и логика" },
+      { id: "deepseek-v4-pro", name: "DeepSeek V4 Pro", cat: "deepseek", icon: "🐋", pro: true, desc: "Продвинутое решение задач" },
+      { id: "grok-4.6", name: "Grok 4.6", cat: "grok", icon: "⚡", pro: true, desc: "Дерзкий и быстрый ИИ от xAI" },
+    ];
+
+    const BASE_PRODUCTS = {
+      sub_trial: { rub: 39, stars: 29, title: "Пробный 1 день", desc: "Безлимит ко всем PRO-моделям на 1 день." },
+      sub_standard: { rub: 149, stars: 115, title: "Стандарт 7 дней", desc: "Безлимит ко всем PRO-моделям на 7 дней." },
+      sub_premium: { rub: 349, stars: 269, title: "Премиум 30 дней", desc: "Безлимит ко всем PRO-моделям на 30 дней." },
+      pack_30: { rub: 99, stars: 79, title: "Пакет +30 запросов", desc: "30 дополнительных запросов (не сгорают)." },
+      pack_100: { rub: 259, stars: 199, title: "Пакет +100 запросов", desc: "100 дополнительных запросов (не сгорают)." },
+      pack_300: { rub: 589, stars: 449, title: "Пакет +300 запросов", desc: "300 дополнительных запросов (не сгорают)." },
+    };
+
+    let STATE = {
+      user_id: tg?.initDataUnsafe?.user?.id || 0,
+      full_name: tg?.initDataUnsafe?.user?.first_name || "Пользователь",
+      is_admin: false,
+      is_pro: false,
+      selected_model: "gpt-6-luna",
+      engine_model: "gpt-6-luna",
+      daily_left: 5,
+      daily_total: 5,
+      extra_requests: 0,
+      ref_balance: 0,
+      ref_count: 0,
+      ref_link: "https://t.me/AetherNeural_bot",
+      discount_percent: 0,
+      discount_until: 0,
+      is_global_discount: false,
+      attached_b64: null,
+      attached_preview: null,
+      current_filter: "all",
+    };
+
+    function haptic(type = "light") {
+      try {
+        if (tg && tg.HapticFeedback) {
+          tg.HapticFeedback.impactOccurred(type);
+        }
+      } catch (e) {}
+    }
+
+    function showToast(text) {
+      const el = document.getElementById("toast");
+      el.textContent = text;
+      el.style.display = "block";
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => { el.style.display = "none"; }, 2800);
+    }
+
+    function switchTab(tabName) {
+      haptic("light");
+      document.querySelectorAll(".tab-view").forEach(el => el.classList.remove("active"));
+      document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
+      document.getElementById("tab-" + tabName)?.classList.add("active");
+      document.getElementById("nav-" + tabName)?.classList.add("active");
+
+      const composer = document.querySelector(".chat-composer");
+      if (composer) composer.style.display = tabName === "chat" ? "block" : "none";
+
+      if (tabName === "admin" && STATE.is_admin) {
+        loadAdminStats();
+        loadAdminLogs();
+      }
+    }
+
+    async function apiRequest(path, method = "GET", body = null) {
+      if (!API_BASE) {
+        throw new Error("Не указан адрес API (?api=https://ваш-сервер)");
+      }
+      const headers = {
+        "Content-Type": "application/json",
+        "X-Telegram-Init-Data": tg?.initData || "",
+        "X-User-Id": String(STATE.user_id || ""),
+      };
+      const opts = { method, headers };
+      if (body) opts.body = JSON.stringify(body);
+      const res = await fetch(API_BASE + path, opts);
+      const data = await res.json();
+      if (!res.ok || data.ok === false) {
+        throw new Error(data.error || ("HTTP " + res.status));
+      }
+      return data;
+    }
+
+    function calcDiscounted(val, pct) {
+      if (val < 5 || !pct) return val;
+      return Math.max(3, Math.round(val * (100 - pct) / 100));
+    }
+
+    function renderAllUI() {
+      const mInfo = MODELS_CATALOG.find(m => m.id === STATE.selected_model) || { name: STATE.selected_model, icon: "🤖" };
+      document.getElementById("activeModelIcon").textContent = mInfo.icon;
+      document.getElementById("activeModelName").textContent = mInfo.name;
+      document.getElementById("topEngineBadge").textContent = "Движок: " + STATE.engine_model;
+      document.getElementById("engineBannerTag").textContent = "⚙️ ЕДИНЫЙ ДВИЖОК: " + STATE.engine_model.toUpperCase();
+
+      const pill = document.getElementById("topQuotaPill");
+      const pillTxt = document.getElementById("topQuotaText");
+      if (STATE.is_pro) {
+        pill.classList.add("pro");
+        pillTxt.textContent = "👑 PRO Безлимит";
+      } else {
+        pill.classList.remove("pro");
+        const totalAvail = STATE.daily_left + STATE.extra_requests;
+        pillTxt.textContent = `⚡ ${totalAvail} запр.`;
+      }
+
+      // Profile
+      document.getElementById("profUserName").textContent = STATE.full_name;
+      document.getElementById("profUserId").textContent = "ID: " + (STATE.user_id || "—");
+      document.getElementById("profPlanBadge").textContent = STATE.is_pro ? "👑 ПОДПИСКА PRO АКТИВНА" : "🆓 БЕСПЛАТНЫЙ ПЛАН";
+      document.getElementById("profDailyLeft").textContent = STATE.is_pro ? "∞" : `${STATE.daily_left} / ${STATE.daily_total}`;
+      document.getElementById("profExtraLeft").textContent = STATE.extra_requests;
+      document.getElementById("profRefBalance").textContent = Number(STATE.ref_balance || 0).toFixed(2) + " ₽";
+      document.getElementById("profRefCount").textContent = (STATE.ref_count || 0) + " чел.";
+
+      if (STATE.is_admin) {
+        document.getElementById("nav-admin").style.display = "flex";
+        document.getElementById("admCurrentEngine").textContent = STATE.engine_model;
+      }
+
+      // Shop & Discounts
+      const pct = STATE.discount_percent || 0;
+      const discCard = document.getElementById("discountBannerCard");
+      if (pct > 0 && STATE.discount_until * 1000 > Date.now()) {
+        discCard.style.display = "block";
+        const dt = new Date(STATE.discount_until * 1000);
+        const timeStr = dt.toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+        document.getElementById("discountBannerTag").textContent = `🔥 ${STATE.is_global_discount ? "ГЛОБАЛЬНАЯ" : "ПЕРСОНАЛЬНАЯ"} СКИДКА ${pct}%`;
+        document.getElementById("discountBannerTitle").textContent = `Цены снижены на ${pct}% до ${timeStr}!`;
+      } else {
+        discCard.style.display = "none";
+      }
+
+      for (const [key, prod] of Object.entries(BASE_PRODUCTS)) {
+        const rubNew = calcDiscounted(prod.rub, pct);
+        const starsNew = calcDiscounted(prod.stars, pct);
+        const priceEl = document.getElementById("price_" + key);
+        const starsEl = document.getElementById("stars_" + key);
+        if (priceEl) {
+          priceEl.innerHTML = pct > 0 && rubNew < prod.rub
+            ? `<span class="strike">${prod.rub} ₽</span>${rubNew} ₽`
+            : `${prod.rub} ₽`;
+        }
+        if (starsEl) {
+          starsEl.textContent = `или ${starsNew} ⭐`;
+        }
+      }
+
+      renderModelsGrid();
+    }
+
+    function filterModels(cat, el) {
+      STATE.current_filter = cat;
+      document.querySelectorAll("#modelCatPills .cat-pill").forEach(p => p.classList.remove("active"));
+      if (el) el.classList.add("active");
+      renderModelsGrid();
+    }
+
+    function renderModelsGrid() {
+      const grid = document.getElementById("modelsBentoGrid");
+      const list = STATE.current_filter === "all"
+        ? MODELS_CATALOG
+        : MODELS_CATALOG.filter(m => m.cat === STATE.current_filter);
+
+      grid.innerHTML = list.map(m => {
+        const isSelected = m.id === STATE.selected_model;
+        const locked = m.pro && !STATE.is_pro && !STATE.is_admin;
+        const tagClass = m.pro ? "pro" : "free";
+        const tagText = isSelected ? "✅ ВЫБРАНА" : (locked ? "🔒 PRO" : (m.pro ? "👑 PRO" : "🆓 FREE"));
+        return `
+          <div class="bento-card ${isSelected ? "glow-accent" : ""}" onclick="selectModel('${m.id}', ${m.pro})">
+            <div class="card-tag ${tagClass}">${tagText}</div>
+            <div class="card-title">${m.icon} ${m.name}</div>
+            <div class="card-desc">${m.desc}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function selectModel(modelId, isProModel) {
+      if (isProModel && !STATE.is_pro && !STATE.is_admin) {
+        haptic("medium");
+        showToast("🔒 Доступно по подписке PRO");
+        switchTab("shop");
+        return;
+      }
+      STATE.selected_model = modelId;
+      renderAllUI();
+      haptic("light");
+      showToast("✅ Модель выбрана");
+      switchTab("chat");
+      try {
+        await apiRequest("/api/select-model", "POST", { model_id: modelId });
+      } catch (e) {}
+    }
+
+    function handlePhotoSelected(ev) {
+      const file = ev.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result;
+        STATE.attached_preview = dataUrl;
+        STATE.attached_b64 = dataUrl.split(",")[1];
+        document.getElementById("attachFileName").textContent = "📸 " + file.name.slice(0, 26);
+        document.getElementById("attachPreviewBar").style.display = "flex";
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearAttachedPhoto() {
+      STATE.attached_b64 = null;
+      STATE.attached_preview = null;
+      document.getElementById("photoFileInput").value = "";
+      document.getElementById("attachPreviewBar").style.display = "none";
+    }
+
+    function appendMessageBubble(role, text, imgUrl = null, meta = "") {
+      const box = document.getElementById("chatMessages");
+      const div = document.createElement("div");
+      div.className = "msg-bubble " + role;
+      if (imgUrl) {
+        const img = document.createElement("img");
+        img.src = imgUrl;
+        img.className = "msg-img-preview";
+        div.appendChild(img);
+      }
+      const txtNode = document.createElement("div");
+      txtNode.textContent = text;
+      div.appendChild(txtNode);
+      if (meta) {
+        const m = document.createElement("div");
+        m.className = "msg-meta";
+        m.textContent = meta;
+        div.appendChild(m);
+      }
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+      return div;
+    }
+
+    async function sendChatMessage() {
+      const inp = document.getElementById("chatInput");
+      const text = inp.value.trim();
+      const b64 = STATE.attached_b64;
+      const preview = STATE.attached_preview;
+
+      if (!text && !b64) return;
+      inp.value = "";
+      clearAttachedPhoto();
+      haptic("light");
+
+      appendMessageBubble("user", text || "Разбери фото", preview);
+      const typingEl = appendMessageBubble("ai", "⏳ Думаю...");
+
+      try {
+        const res = await apiRequest("/api/chat", "POST", {
+          text: text || "Подробно разбери и реши то, что изображено на фото.",
+          image_b64: b64,
+          model_id: STATE.selected_model,
+        });
+        typingEl.remove();
+        appendMessageBubble("ai", res.answer, null, `Движок: ${res.engine_used || STATE.engine_model}`);
+        if (typeof res.daily_left === "number") STATE.daily_left = res.daily_left;
+        if (typeof res.extra_requests === "number") STATE.extra_requests = res.extra_requests;
+        renderAllUI();
+      } catch (err) {
+        typingEl.remove();
+        appendMessageBubble("ai", "⚠️ " + err.message);
+      }
+    }
+
+    async function clearChatHistory() {
+      haptic("medium");
+      try {
+        await apiRequest("/api/clear-history", "POST", {});
+      } catch (e) {}
+      document.getElementById("chatMessages").innerHTML = `
+        <div class="msg-bubble ai">
+          🧹 Память диалога очищена! Начинаем с чистого листа.
+        </div>`;
+      showToast("🧹 Чат очищен");
+    }
+
+    // SHOP & CHECKOUT
+    let CURRENT_ORDER_CODE = "";
+    function openCheckout(orderCode) {
+      CURRENT_ORDER_CODE = orderCode;
+      const pct = STATE.discount_percent || 0;
+      let title = "Заказ";
+      let desc = "";
+      let rub = 0;
+      let stars = 0;
+
+      if (orderCode.startsWith("prod:")) {
+        const k = orderCode.split(":")[1];
+        const p = BASE_PRODUCTS[k];
+        title = p.title;
+        desc = p.desc;
+        rub = calcDiscounted(p.rub, pct);
+        stars = calcDiscounted(p.stars, pct);
+      } else if (orderCode.startsWith("csub:")) {
+        const d = parseInt(orderCode.split(":")[1], 10);
+        title = `Подписка PRO на ${d} дн.`;
+        desc = `Безлимитный доступ ко всем моделям на ${d} дн.`;
+        const baseR = d === 1 ? 39 : d === 7 ? 149 : d === 30 ? 349 : d < 7 ? d * 32 : d < 30 ? d * 18 : d * 12;
+        const baseS = d === 1 ? 29 : d === 7 ? 115 : d === 30 ? 269 : d < 7 ? d * 25 : d < 30 ? d * 14 : d * 9;
+        rub = calcDiscounted(baseR, pct);
+        stars = calcDiscounted(baseS, pct);
+      } else if (orderCode.startsWith("cpack:")) {
+        const r = parseInt(orderCode.split(":")[1], 10);
+        title = `Пакет +${r} запросов`;
+        desc = "Дополнительные запросы без срока сгорания.";
+        const baseR = r === 1 ? 3 : r < 100 ? Math.max(3, Math.round(r * 3.3)) : r < 300 ? Math.round(r * 2.5) : Math.round(r * 1.9);
+        const baseS = r === 1 ? 3 : r < 100 ? Math.max(2, Math.round(r * 2.6)) : r < 300 ? Math.round(r * 2.0) : Math.round(r * 1.5);
+        rub = calcDiscounted(baseR, pct);
+        stars = calcDiscounted(baseS, pct);
+      }
+
+      document.getElementById("modalOrderTitle").textContent = title;
+      document.getElementById("modalOrderDesc").textContent = desc;
+      document.getElementById("modalPaySbpBtn").textContent = `💳 Оплатить через СБП — ${rub} ₽`;
+      document.getElementById("modalPayStarsBtn").textContent = `⭐ Telegram Stars — ${stars} ⭐`;
+
+      document.getElementById("modalPaySbpBtn").onclick = () => startSbpPayment(orderCode);
+      document.getElementById("modalPayStarsBtn").onclick = () => startStarsPayment(orderCode);
+
+      document.getElementById("checkoutModal").classList.add("open");
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("open");
+    }
+
+    function buyCustomSub() {
+      const val = parseInt(document.getElementById("customSubDaysInput").value, 10);
+      if (!val || val < 1 || val > 60) {
+        showToast("⚠️ Укажи от 1 до 60 дней");
+        return;
+      }
+      openCheckout("csub:" + val);
+    }
+
+    function buyCustomPack() {
+      const val = parseInt(document.getElementById("customPackReqsInput").value, 10);
+      if (!val || val < 1 || val > 500) {
+        showToast("⚠️ Укажи от 1 до 500 запросов");
+        return;
+      }
+      openCheckout("cpack:" + val);
+    }
+
+    async function startSbpPayment(orderCode) {
+      closeModal("checkoutModal");
+      showToast("⏳ Создаю счёт СБП...");
+      try {
+        const res = await apiRequest("/api/shop/create-sbp", "POST", { order_code: orderCode });
+        if (tg && tg.openLink) {
+          tg.openLink(res.pay_url);
+        } else {
+          window.open(res.pay_url, "_blank");
+        }
+      } catch (e) {
+        showToast("⚠️ " + e.message);
+      }
+    }
+
+    async function startStarsPayment(orderCode) {
+      closeModal("checkoutModal");
+      showToast("⏳ Формирую счёт Stars...");
+      try {
+        const res = await apiRequest("/api/shop/create-stars", "POST", { order_code: orderCode });
+        if (tg && tg.openInvoice) {
+          tg.openInvoice(res.invoice_url, (status) => {
+            if (status === "paid") {
+              showToast("🎉 Оплата Stars прошла успешно!");
+              initApp();
+            }
+          });
+        } else {
+          window.open(res.invoice_url, "_blank");
+        }
+      } catch (e) {
+        showToast("⚠️ " + e.message);
+      }
+    }
+
+    // PROMO & REFERRAL
+    async function activatePromo() {
+      const code = document.getElementById("promoCodeInput").value.trim().toUpperCase();
+      if (!code) return;
+      try {
+        const res = await apiRequest("/api/promo", "POST", { code });
+        document.getElementById("promoCodeInput").value = "";
+        showToast("🎉 Промокод активирован!");
+        await initApp();
+      } catch (e) {
+        showToast("⚠️ " + e.message);
+      }
+    }
+
+    function copyRefLink() {
+      navigator.clipboard?.writeText(STATE.ref_link);
+      haptic("light");
+      showToast("📋 Реферальная ссылка скопирована!");
+    }
+
+    function openWithdrawModal() {
+      if ((STATE.ref_balance || 0) < 100) {
+        showToast("❌ Минимум для вывода — 100 ₽");
+        return;
+      }
+      document.getElementById("withdrawModal").classList.add("open");
+    }
+
+    async function submitWithdraw() {
+      const reqs = document.getElementById("withdrawReqsInput").value.trim();
+      if (reqs.length < 5) {
+        showToast("⚠️ Введи корректные реквизиты");
+        return;
+      }
+      try {
+        await apiRequest("/api/withdraw", "POST", { requisites: reqs });
+        closeModal("withdrawModal");
+        showToast("✅ Заявка на вывод создана!");
+        await initApp();
+      } catch (e) {
+        showToast("⚠️ " + e.message);
+      }
+    }
+
+    // ADMIN FUNCTIONS
+    async function loadAdminStats() {
+      try {
+        const res = await apiRequest("/api/admin/stats", "GET");
+        document.getElementById("admTotalUsers").textContent = res.total_users;
+        document.getElementById("admProUsers").textContent = "PRO: " + res.pro_users;
+        document.getElementById("admSbpRub").textContent = Math.round(res.total_sbp_rub) + " ₽";
+        document.getElementById("admStarsTotal").textContent = "Stars: " + res.total_stars + " ⭐";
+        STATE.engine_model = res.engine_model;
+        document.getElementById("admCurrentEngine").textContent = res.engine_model;
+        document.getElementById("topEngineBadge").textContent = "Движок: " + res.engine_model;
+        if (res.global_discount?.active) {
+          const exp = new Date(res.global_discount.until * 1000).toLocaleString("ru-RU");
+          document.getElementById("admGdiscStatus").textContent = `Активна: -${res.global_discount.percent}% (до ${exp})`;
+        } else {
+          document.getElementById("admGdiscStatus").textContent = "Статус: Выключена";
+        }
+      } catch (e) {}
+    }
+
+    async function quickSetEngine(modelId) {
+      document.getElementById("admEngineInput").value = modelId;
+      await saveAdminEngine();
+    }
+
+    async function saveAdminEngine() {
+      const val = document.getElementById("admEngineInput").value.trim();
+      if (!val || val.includes(" ")) {
+        showToast("⚠️ Введи корректный ID движка");
+        return;
+      }
+      try {
+        await apiRequest("/api/admin/set-engine", "POST", { engine_model: val });
+        STATE.engine_model = val;
+        document.getElementById("admEngineInput").value = "";
+        renderAllUI();
+        showToast("✅ Движок обновлён: " + val);
+      } catch (e) {
+        showToast("⚠️ " + e.message);
+      }
+    }
+
+    async function saveAdminGlobalDiscount() {
+      const pct = parseInt(document.getElementById("admGdiscPct").value, 10);
+      const hrs = parseInt(document.getElementById("admGdiscHours").value, 10);
+      if (!pct || pct < 1 || pct > 95 || !hrs || hrs < 1) {
+        showToast("⚠️ Укажи процент (1-95) и часы");
+        return;
+      }
+      try {
+        await apiRequest("/api/admin/global-discount", "POST", { percent: pct, hours: hrs });
+        showToast(`🔥 Глобальная скидка -${pct}% запущена!`);
+        await initApp();
+        await loadAdminStats();
+      } catch (e) {
+        showToast("⚠️ " + e.message);
+      }
+    }
+
+    async function disableAdminGlobalDiscount() {
+      try {
+        await apiRequest("/api/admin/global-discount", "POST", { percent: 0, hours: 0 });
+        showToast("🛑 Глобальная скидка выключена");
+        await initApp();
+        await loadAdminStats();
+      } catch (e) {
+        showToast("⚠️ " + e.message);
+      }
+    }
+
+    async function loadAdminLogs() {
+      const box = document.getElementById("admLogsContainer");
+      box.innerHTML = `<div class="card-desc">⏳ Загружаю историю запросов...</div>`;
+      try {
+        const res = await apiRequest("/api/admin/logs", "GET");
+        if (!res.logs || res.logs.length === 0) {
+          box.innerHTML = `<div class="card-desc">Записей пока нет.</div>`;
+          return;
+        }
+        box.innerHTML = res.logs.map(l => {
+          const dt = new Date(l.created_at * 1000).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+          return `
+            <div class="log-item">
+              <div style="color:#a5b4fc;font-weight:700">${dt} • ${l.req_type} • ${l.full_name} (${l.user_id})</div>
+              <div style="margin-top:4px;color:#fff"><b>Запрос:</b> ${escapeHtml(l.user_query)}</div>
+              <div style="margin-top:3px;color:var(--text-muted)"><b>Ответ:</b> ${escapeHtml(l.bot_reply)}</div>
+            </div>
+          `;
+        }).join("");
+      } catch (e) {
+        box.innerHTML = `<div class="card-desc">⚠️ ${e.message}</div>`;
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    async function initApp() {
+      renderAllUI();
+      if (!API_BASE) return;
+      try {
+        const me = await apiRequest("/api/me", "GET");
+        STATE = { ...STATE, ...me };
+        renderAllUI();
+      } catch (e) {
+        console.warn("API sync:", e.message);
+      }
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
