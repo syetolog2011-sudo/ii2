@@ -20,10 +20,10 @@
     ===================================================================== */
     :root {
       --bg-main: #090b10;
-      --bg-sidebar: rgba(17, 20, 27, 0.88);
-      --bg-surface: rgba(27, 31, 42, 0.78);
-      --bg-surface-hover: rgba(38, 43, 58, 0.9);
-      --bg-input: rgba(24, 28, 38, 0.82);
+      --bg-sidebar: rgba(16, 19, 27, 0.88);
+      --bg-surface: rgba(26, 30, 42, 0.78);
+      --bg-surface-hover: rgba(37, 43, 59, 0.94);
+      --bg-input: rgba(23, 27, 38, 0.82);
       --border: rgba(255, 255, 255, 0.08);
       --border-strong: rgba(255, 255, 255, 0.14);
       --text-main: #f3f5fa;
@@ -31,21 +31,22 @@
       --accent: #6366f1;
       --accent-2: #8b5cf6;
       --accent-soft: rgba(99, 102, 241, 0.18);
-      --pill-active: rgba(99, 102, 241, 0.16);
+      --pill-active: rgba(99, 102, 241, 0.17);
       --shadow-modal: 0 24px 60px rgba(0, 0, 0, 0.68);
-      --code-bg: #131620;
-      --code-header-bg: #1b1f2d;
+      --code-bg: #12151f;
+      --code-header-bg: #1a1e2c;
       --code-border: rgba(255, 255, 255, 0.08);
+      --provider-glow: rgba(139, 92, 246, 0.48);
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --tg-content-top: var(--tg-content-safe-area-inset-top, 0px);
     }
 
     body.theme-light {
-      --bg-main: #f8faff;
-      --bg-sidebar: rgba(241, 244, 251, 0.9);
-      --bg-surface: rgba(232, 237, 248, 0.8);
-      --bg-surface-hover: rgba(221, 228, 243, 0.95);
+      --bg-main: #f7f9fe;
+      --bg-sidebar: rgba(240, 244, 252, 0.9);
+      --bg-surface: rgba(231, 236, 248, 0.8);
+      --bg-surface-hover: rgba(220, 227, 243, 0.95);
       --bg-input: rgba(255, 255, 255, 0.9);
       --border: rgba(15, 23, 42, 0.08);
       --border-strong: rgba(15, 23, 42, 0.15);
@@ -82,7 +83,7 @@
       width: 17px;
       height: 17px;
       stroke: currentColor;
-      stroke-width: 1.9;
+      stroke-width: 1.85;
       stroke-linecap: round;
       stroke-linejoin: round;
       fill: none;
@@ -96,32 +97,32 @@
       position: fixed;
       top: 48%;
       left: 55%;
-      width: 680px;
-      height: 680px;
+      width: 720px;
+      height: 720px;
       transform: translate(-50%, -50%);
-      background: radial-gradient(circle, rgba(79, 70, 229, 0.22) 0%, rgba(14, 165, 233, 0.1) 38%, transparent 70%);
-      filter: blur(55px);
+      background: radial-gradient(circle, rgba(79, 70, 229, 0.24) 0%, rgba(139, 92, 246, 0.14) 32%, rgba(14, 165, 233, 0.08) 54%, transparent 72%);
+      filter: blur(58px);
       pointer-events: none;
       z-index: 0;
-      animation: ambientPulse 11s ease-in-out infinite alternate;
+      animation: ambientBreathe 10s ease-in-out infinite alternate;
     }
 
     body.theme-light .ambient-glow {
-      background: radial-gradient(circle, rgba(99, 102, 241, 0.14) 0%, rgba(56, 189, 248, 0.08) 40%, transparent 70%);
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.16) 0%, rgba(168, 85, 247, 0.09) 35%, rgba(56, 189, 248, 0.07) 55%, transparent 72%);
     }
 
     body.no-gradient .ambient-glow {
       display: none;
     }
 
-    @keyframes ambientPulse {
-      0% { transform: translate(-52%, -50%) scale(0.95); opacity: 0.78; }
-      50% { transform: translate(-47%, -46%) scale(1.07); opacity: 1; }
-      100% { transform: translate(-50%, -53%) scale(0.98); opacity: 0.85; }
+    @keyframes ambientBreathe {
+      0% { transform: translate(-52%, -50%) scale(0.94); opacity: 0.76; }
+      50% { transform: translate(-47%, -46%) scale(1.08); opacity: 1; }
+      100% { transform: translate(-50%, -53%) scale(0.98); opacity: 0.84; }
     }
 
     /* =====================================================================
-       ОСНОВНОЙ КАРКАС (НА ПК БЕЗ ЛИШНЕГО ОТСТУПА СВЕРХУ!)
+       ОСНОВНОЙ КАРКАС (НА ПК СТРОГО ПО ВЕРХУ, СВОРАЧИВАЕМЫЙ САЙДБАР)
     ===================================================================== */
     .app-shell {
       display: flex;
@@ -131,28 +132,30 @@
       padding-bottom: var(--safe-bottom);
       position: relative;
       z-index: 1;
+      overflow: hidden;
     }
 
-    /* ЛЕВАЯ ПАНЕЛЬ (МАТОВОЕ СТЕКЛО) */
+    /* ЛЕВАЯ ПАНЕЛЬ (МАТОВОЕ СТЕКЛО + РЕЖИМ COLLAPSED НА ПК) */
     .sidebar {
       width: 276px;
       background: var(--bg-sidebar);
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       padding: 14px 12px;
       flex-shrink: 0;
       z-index: 50;
-      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.25s ease;
+      transition: width 0.28s cubic-bezier(0.22, 1, 0.36, 1), transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.25s ease;
     }
 
     .sidebar-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 4px 6px 14px;
+      padding: 4px 4px 14px;
+      gap: 6px;
     }
 
     .brand-box {
@@ -160,6 +163,8 @@
       align-items: center;
       gap: 10px;
       cursor: pointer;
+      min-width: 0;
+      overflow: hidden;
     }
 
     .brand-logo-img {
@@ -167,6 +172,7 @@
       height: 28px;
       border-radius: 8px;
       object-fit: cover;
+      flex-shrink: 0;
     }
 
     .brand-logo-fallback {
@@ -179,12 +185,33 @@
       color: #fff;
       font-weight: 800;
       font-size: 14px;
+      flex-shrink: 0;
     }
 
     .brand-name {
       font-size: 17.5px;
       font-weight: 650;
       letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .collapse-pc-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .collapse-pc-btn:hover {
+      background: var(--bg-surface);
+      color: var(--text-main);
     }
 
     .close-sidebar-btn {
@@ -210,13 +237,19 @@
       font-size: 13.5px;
       font-weight: 550;
       cursor: pointer;
-      transition: background 0.15s, border-color 0.15s;
+      transition: background 0.15s, border-color 0.15s, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
       margin-bottom: 12px;
+      overflow: hidden;
+      white-space: nowrap;
     }
 
     .new-chat-btn:hover {
       background: var(--bg-surface-hover);
       border-color: var(--border-strong);
+    }
+
+    .new-chat-btn:active {
+      transform: scale(0.97);
     }
 
     .nav-links {
@@ -236,6 +269,8 @@
       font-size: 13.5px;
       cursor: pointer;
       transition: background 0.15s;
+      overflow: hidden;
+      white-space: nowrap;
     }
 
     .side-nav-item:hover, .side-nav-item.active {
@@ -246,16 +281,27 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      min-width: 0;
     }
 
-    .badge-mini {
+    /* ПЕРЕЛИВАЮЩИЙСЯ БЕЙДЖ PRO */
+    .pro-shimmer-badge {
       font-size: 10.5px;
-      padding: 2px 7px;
+      padding: 2px 8px;
       border-radius: 999px;
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(168, 85, 247, 0.25));
-      border: 1px solid rgba(139, 92, 246, 0.35);
-      color: #a5b4fc;
-      font-weight: 700;
+      background: linear-gradient(110deg, #f59e0b 15%, #a855f7 45%, #38bdf8 75%, #f59e0b 95%);
+      background-size: 220% 100%;
+      color: #fff;
+      font-weight: 750;
+      letter-spacing: 0.04em;
+      box-shadow: 0 2px 10px rgba(168, 85, 247, 0.35);
+      animation: badgeFlow 3.5s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes badgeFlow {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 220% 50%; }
     }
 
     .history-label {
@@ -268,6 +314,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      white-space: nowrap;
     }
 
     .history-list {
@@ -294,14 +341,8 @@
       transition: background 0.15s;
     }
 
-    .history-item:hover {
-      background: var(--bg-surface);
-    }
-
-    .history-item.active {
-      background: var(--pill-active);
-      font-weight: 500;
-    }
+    .history-item:hover { background: var(--bg-surface); }
+    .history-item.active { background: var(--pill-active); font-weight: 500; }
 
     .history-title {
       white-space: nowrap;
@@ -319,11 +360,9 @@
       place-items: center;
     }
 
-    .history-item:hover .history-del {
-      opacity: 1;
-    }
+    .history-item:hover .history-del { opacity: 1; }
 
-    /* НИЖНИЙ ПРОФИЛЬ (СВЕТЯЩАЯСЯ РАМКА ДЛЯ PRO) И НАСТРОЙКИ */
+    /* НИЖНИЙ ПРОФИЛЬ */
     .sidebar-footer {
       border-top: 1px solid var(--border);
       padding-top: 10px;
@@ -346,13 +385,11 @@
       transition: background 0.15s;
     }
 
-    .user-mini-card:hover {
-      background: var(--bg-surface);
-    }
+    .user-mini-card:hover { background: var(--bg-surface); }
 
     .user-avatar-wrap {
-      width: 34px;
-      height: 34px;
+      width: 35px;
+      height: 35px;
       border-radius: 50%;
       position: relative;
       flex-shrink: 0;
@@ -363,13 +400,12 @@
       border: 1.5px solid var(--border-strong);
     }
 
-    /* Светящаяся градиентная рамка для PRO-пользователя */
     .user-avatar-wrap.pro-ring {
       border: 2px solid transparent;
       background:
-        linear-gradient(var(--bg-sidebar), var(--bg-sidebar)) padding-box,
+        linear-gradient(var(--bg-main), var(--bg-main)) padding-box,
         linear-gradient(135deg, #f59e0b, #8b5cf6, #06b6d4) border-box;
-      box-shadow: 0 0 14px rgba(139, 92, 246, 0.45);
+      box-shadow: 0 0 16px rgba(139, 92, 246, 0.5);
     }
 
     .user-avatar-img {
@@ -400,13 +436,7 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-    }
-
-    .user-mini-plan.is-pro {
-      background: linear-gradient(90deg, #fbbf24, #a78bfa);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-weight: 700;
+      margin-top: 1px;
     }
 
     .settings-gear-btn {
@@ -428,8 +458,43 @@
       color: var(--text-main);
     }
 
+    /* СВЕРНУТЫЙ САЙДБАР НА ПК (COLLAPSED SIDEBAR) */
+    @media (min-width: 769px) {
+      .sidebar.collapsed {
+        width: 68px;
+        padding: 14px 10px;
+      }
+      .sidebar.collapsed .brand-box,
+      .sidebar.collapsed .new-chat-btn span,
+      .sidebar.collapsed .side-nav-item span,
+      .sidebar.collapsed .history-label,
+      .sidebar.collapsed .history-list,
+      .sidebar.collapsed .user-mini-card > div:last-child {
+        display: none;
+      }
+      .sidebar.collapsed .sidebar-header {
+        justify-content: center;
+      }
+      .sidebar.collapsed .new-chat-btn {
+        justify-content: center;
+        padding: 10px;
+      }
+      .sidebar.collapsed .side-nav-item {
+        justify-content: center;
+        padding: 10px;
+      }
+      .sidebar.collapsed .sidebar-footer {
+        flex-direction: column;
+        gap: 10px;
+      }
+      .sidebar.collapsed .user-mini-card {
+        padding: 4px;
+        justify-content: center;
+      }
+    }
+
     /* =====================================================================
-       ПРАВАЯ РАБОЧАЯ ЗОНА
+       ПРАВАЯ РАБОЧАЯ ЗОНА (С ЖЁСТКИМ ОГРАНИЧЕНИЕМ ШИРИНЫ ПРОТИВ БАГА С КОДОМ!)
     ===================================================================== */
     .main-stage {
       flex: 1;
@@ -437,7 +502,9 @@
       flex-direction: column;
       position: relative;
       min-width: 0;
+      max-width: 100%;
       height: 100%;
+      overflow: hidden;
     }
 
     .stage-topbar {
@@ -448,12 +515,14 @@
       justify-content: space-between;
       z-index: 20;
       flex-shrink: 0;
+      min-width: 0;
     }
 
     .topbar-left {
       display: flex;
       align-items: center;
       gap: 8px;
+      min-width: 0;
     }
 
     .hamburger-btn {
@@ -466,7 +535,6 @@
       border-radius: 10px;
     }
 
-    /* КНОПКА ВЫБОРА МОДЕЛИ С ИКОНКОЙ НЕЙРОСЕТИ */
     .model-dropdown-trigger {
       display: inline-flex;
       align-items: center;
@@ -479,7 +547,8 @@
       padding: 6px 12px;
       border-radius: 14px;
       cursor: pointer;
-      transition: background 0.15s, border-color 0.15s;
+      transition: background 0.15s, border-color 0.15s, transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      min-width: 0;
     }
 
     .model-dropdown-trigger:hover {
@@ -487,27 +556,32 @@
       border-color: var(--border);
     }
 
-    .model-avatar-box {
+    .model-dropdown-trigger:active {
+      transform: scale(0.97);
+    }
+
+    .model-avatar-slot {
       width: 24px;
       height: 24px;
       border-radius: 7px;
       overflow: hidden;
       display: grid;
       place-items: center;
-      background: var(--bg-surface-hover);
       flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.12);
     }
 
-    .model-avatar-box.lg {
-      width: 32px;
-      height: 32px;
-      border-radius: 9px;
+    .model-avatar-slot.lg {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
     }
 
-    .model-avatar-box img {
+    .model-avatar-slot img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      display: block;
     }
 
     .quota-badge {
@@ -517,20 +591,20 @@
       padding: 6px 13px;
       border-radius: 999px;
       background: var(--bg-surface);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border: 1px solid var(--border);
       font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
+      flex-shrink: 0;
       transition: border-color 0.15s;
     }
 
-    .quota-badge:hover {
-      border-color: var(--border-strong);
-    }
+    .quota-badge:hover { border-color: var(--border-strong); }
 
     /* =====================================================================
-       ЭКРАН ЧАТА И ПРИВЕТСТВИЯ + КАРТОЧКИ-ПОДСКАЗКИ
+       ЭКРАН ЧАТА, ГРАДИЕНТНЫЙ ЗАГОЛОВОК И БЛИК НА ЛОГОТИПЕ
     ===================================================================== */
     .view-section {
       display: none;
@@ -538,23 +612,28 @@
       flex-direction: column;
       height: calc(100% - 56px);
       overflow: hidden;
+      min-width: 0;
+      position: relative;
     }
 
-    .view-section.active {
-      display: flex;
-    }
+    .view-section.active { display: flex; }
 
     .chat-scroll-area {
       flex: 1;
       overflow-y: auto;
+      overflow-x: hidden;
       padding: 12px 20px;
       display: flex;
       flex-direction: column;
+      min-width: 0;
+      scroll-behavior: smooth;
     }
 
+    /* Жёсткий фикс ширины контейнера, чтобы длинный код не сжимал экран */
     .chat-container-inner {
       width: 100%;
       max-width: 780px;
+      min-width: 0;
       margin: 0 auto;
       flex: 1;
       display: flex;
@@ -569,27 +648,72 @@
       justify-content: center;
       text-align: center;
       padding: 16px;
-      animation: fadeUp 0.35s ease;
+      animation: springPop 0.45s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
+    /* ЛОГОТИП С БЕГУЩИМ БЛИКОМ И СВЕЧЕНИЕМ ПОД ВЫБРАННУЮ НЕЙРОСЕТЬ */
     .welcome-logo-wrap {
-      margin-bottom: 16px;
+      position: relative;
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      margin-bottom: 18px;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      box-shadow: 0 12px 34px var(--provider-glow), 0 0 0 1px rgba(255, 255, 255, 0.14);
+      transition: box-shadow 0.45s ease;
+    }
+
+    .welcome-logo-wrap::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -80%;
+      width: 55%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.42), transparent);
+      transform: rotate(25deg);
+      animation: logoSheenSweep 4.2s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes logoSheenSweep {
+      0%, 62% { left: -80%; }
+      100% { left: 150%; }
     }
 
     .welcome-logo-wrap img {
-      width: 52px;
-      height: 52px;
-      border-radius: 16px;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
-      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.28);
     }
 
+    /* ПЛАВНЫЙ ГРАДИЕНТНЫЙ ЗАГОЛОВОК ПРИВЕТСТВИЯ (КАК В GEMINI ADVANCED) */
     .welcome-title {
-      font-size: clamp(24px, 3.8vw, 34px);
-      font-weight: 550;
+      font-size: clamp(25px, 4vw, 36px);
+      font-weight: 600;
       letter-spacing: -0.025em;
       margin-bottom: 10px;
       line-height: 1.25;
+      background: linear-gradient(120deg, #ffffff 10%, #a5b4fc 48%, #7dd3fc 82%, #e0e7ff 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: titleGradientShift 7s ease-in-out infinite alternate;
+    }
+
+    body.theme-light .welcome-title {
+      background: linear-gradient(120deg, #0f172a 10%, #4338ca 50%, #0284c7 85%, #1e1b4b 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    @keyframes titleGradientShift {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
     }
 
     .welcome-sub {
@@ -599,7 +723,6 @@
       margin-bottom: 24px;
     }
 
-    /* КАРТОЧКИ-ПОДСКАЗКИ (PROMPT CHIPS) */
     .prompt-chips-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -617,16 +740,22 @@
       border-radius: 16px;
       background: var(--bg-surface);
       backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border: 1px solid var(--border);
       color: var(--text-main);
       cursor: pointer;
-      transition: transform 0.15s, border-color 0.2s, background 0.2s;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s, background 0.2s, box-shadow 0.2s;
     }
 
     .prompt-chip-card:hover {
       background: var(--bg-surface-hover);
-      border-color: rgba(99, 102, 241, 0.45);
-      transform: translateY(-1px);
+      border-color: rgba(139, 92, 246, 0.5);
+      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.14);
+      transform: translateY(-2px);
+    }
+
+    .prompt-chip-card:active {
+      transform: scale(0.96);
     }
 
     .chip-ico-wrap {
@@ -640,32 +769,32 @@
       flex-shrink: 0;
     }
 
-    .chip-title {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .chip-sub {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      margin-top: 1px;
-    }
+    .chip-title { font-size: 13px; font-weight: 600; }
+    .chip-sub { font-size: 11.5px; color: var(--text-muted); margin-top: 1px; }
 
     /* =====================================================================
-       СООБЩЕНИЯ, СКЕЛЕТОН-ШИММЕР, MARKDOWN И KATEX
+       СООБЩЕНИЯ, ПРУЖИНИСТАЯ АНИМАЦИЯ ВСПЛЫТИЯ, MARKDOWN И БЛОКИ КОДА
     ===================================================================== */
     .messages-stack {
       display: flex;
       flex-direction: column;
       gap: 22px;
-      padding-bottom: 16px;
+      padding-bottom: 24px;
+      width: 100%;
+      min-width: 0;
     }
 
     .msg-row {
       display: flex;
       flex-direction: column;
       max-width: 88%;
-      animation: fadeUp 0.2s ease;
+      min-width: 0;
+      animation: springBubble 0.34s cubic-bezier(0.22, 1.25, 0.36, 1);
+    }
+
+    @keyframes springBubble {
+      0% { opacity: 0; transform: translateY(14px) scale(0.96); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .msg-row.user {
@@ -678,6 +807,7 @@
       align-items: flex-start;
       width: 100%;
       max-width: 100%;
+      min-width: 0;
     }
 
     .msg-bubble {
@@ -686,6 +816,9 @@
       font-size: 15px;
       line-height: 1.62;
       word-wrap: break-word;
+      overflow-wrap: break-word;
+      min-width: 0;
+      max-width: 100%;
     }
 
     .msg-row.user .msg-bubble {
@@ -700,6 +833,7 @@
       color: var(--text-main);
       padding: 4px 4px 6px;
       width: 100%;
+      min-width: 0;
     }
 
     .msg-model-tag {
@@ -713,33 +847,68 @@
       gap: 7px;
     }
 
-    /* СКЕЛЕТОН-АНИМАЦИЯ ЗАГРУЗКИ (SHIMMER) */
-    .skeleton-thinking {
+    /* СКЕЛЕТОН С ПУЛЬСИРУЮЩИМ ЛОГОТИПОМ AETHER AI */
+    .skeleton-thinking-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 6px 0;
+      max-width: 480px;
+    }
+
+    .skeleton-pulse-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+      overflow: hidden;
+      flex-shrink: 0;
+      animation: logoPulseGlow 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-pulse-logo img { width: 100%; height: 100%; object-fit: cover; }
+
+    @keyframes logoPulseGlow {
+      0%, 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.5); }
+      50% { transform: scale(1.06); box-shadow: 0 0 16px 3px rgba(139, 92, 246, 0.45); }
+    }
+
+    .skeleton-bars-col {
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 9px;
-      padding: 6px 0;
-      max-width: 440px;
+      gap: 8px;
+      padding-top: 3px;
     }
 
     .skel-bar {
-      height: 11px;
+      height: 10px;
       border-radius: 999px;
-      background: linear-gradient(90deg, var(--bg-surface) 25%, rgba(99, 102, 241, 0.28) 50%, var(--bg-surface) 75%);
+      background: linear-gradient(90deg, var(--bg-surface) 20%, rgba(99, 102, 241, 0.34) 50%, var(--bg-surface) 80%);
       background-size: 200% 100%;
-      animation: shimmerMove 1.4s infinite linear;
+      animation: shimmerMove 1.35s infinite linear;
     }
 
     .skel-bar.w1 { width: 92%; }
-    .skel-bar.w2 { width: 76%; }
-    .skel-bar.w3 { width: 54%; }
+    .skel-bar.w2 { width: 74%; }
+    .skel-bar.w3 { width: 52%; }
 
     @keyframes shimmerMove {
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
 
-    /* СТИЛИ MARKDOWN */
+    /* СТИЛИ MARKDOWN (С ЗАЩИТОЙ ОТ РАСТЯГИВАНИЯ ЭКРАНА) */
+    .md-content {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+    }
     .md-content p { margin-bottom: 10px; }
     .md-content p:last-child { margin-bottom: 0; }
     .md-content h1, .md-content h2, .md-content h3 { margin: 14px 0 8px; font-weight: 700; line-height: 1.3; }
@@ -757,6 +926,7 @@
     }
     .md-content table {
       width: 100%;
+      max-width: 100%;
       border-collapse: collapse;
       margin: 12px 0;
       font-size: 13.5px;
@@ -776,15 +946,19 @@
       border-radius: 6px;
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-size: 0.88em;
+      word-break: break-all;
     }
 
-    /* АДАПТИВНЫЕ БЛОКИ КОДА (СВЕТЛЫЕ И ТЁМНЫЕ) */
+    /* БЛОК КОДА: НЕ СУЖАЕТ ЭКРАН, КРАСИВЫЙ ГОРИЗОНТАЛЬНЫЙ СКРОЛЛ ВНУТРИ */
     .code-block-wrapper {
       margin: 12px 0;
       border-radius: 14px;
       overflow: hidden;
       border: 1px solid var(--code-border);
       background: var(--code-bg);
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
     }
 
     .code-block-header {
@@ -796,7 +970,7 @@
       border-bottom: 1px solid var(--code-border);
       font-size: 12px;
       color: var(--text-muted);
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
 
     .copy-code-btn {
@@ -820,6 +994,7 @@
       margin: 0;
       padding: 13px 15px;
       overflow-x: auto;
+      max-width: 100%;
       font-size: 13.5px;
       line-height: 1.5;
     }
@@ -828,11 +1003,11 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       background: transparent !important;
       padding: 0 !important;
+      white-space: pre;
     }
 
-    .katex-display { overflow-x: auto; overflow-y: hidden; padding: 6px 0; }
+    .katex-display { overflow-x: auto; overflow-y: hidden; padding: 6px 0; max-width: 100%; }
 
-    /* ЕДИНСТВЕННАЯ КНОПКА ПОД ОТВЕТОМ — «КОПИРОВАТЬ» */
     .ai-actions-bar {
       display: flex;
       align-items: center;
@@ -854,10 +1029,7 @@
       transition: background 0.15s, color 0.15s;
     }
 
-    .ai-act-btn:hover {
-      background: var(--bg-surface);
-      color: var(--text-main);
-    }
+    .ai-act-btn:hover { background: var(--bg-surface); color: var(--text-main); }
 
     .msg-attachment-img {
       max-width: 240px;
@@ -879,7 +1051,43 @@
     }
 
     /* =====================================================================
-       НИЖНЯЯ КАПСУЛА ВВОДА (МАТОВОЕ СТЕКЛО + СТОП ВО ВРЕМЯ ПЕЧАТИ)
+       ПАРЯЩАЯ КНОПКА БЫСТРОГО СКРОЛЛА ВНИЗ (↓)
+    ===================================================================== */
+    .scroll-bottom-fab {
+      position: absolute;
+      right: 22px;
+      bottom: 88px;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--bg-sidebar);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-strong);
+      color: var(--text-main);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      z-index: 30;
+      opacity: 0;
+      transform: translateY(10px) scale(0.9);
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .scroll-bottom-fab.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .scroll-bottom-fab:hover {
+      background: var(--bg-surface-hover);
+    }
+
+    /* =====================================================================
+       НИЖНЯЯ КАПСУЛА ВВОДА + ВИЗУАЛЬНЫЕ КАРТОЧКИ ПРИКРЕПЛЁННЫХ ФАЙЛОВ/ФОТО
     ===================================================================== */
     .composer-wrapper {
       padding: 8px 16px 18px;
@@ -890,23 +1098,95 @@
       flex-shrink: 0;
     }
 
-    .attachment-chip-bar {
+    /* Визуальная карточка-превью прикреплённого фото или файла */
+    .attachment-preview-tray {
       display: none;
       align-items: center;
-      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+      padding-left: 6px;
+      animation: springBubble 0.25s cubic-bezier(0.22, 1.25, 0.36, 1);
+    }
+
+    .att-image-card {
+      position: relative;
+      width: 68px;
+      height: 68px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border-strong);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .att-image-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .att-file-card {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
       background: var(--bg-surface);
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(16px);
       border: 1px solid var(--border-strong);
       border-radius: 14px;
-      padding: 7px 13px;
-      margin-bottom: 8px;
-      font-size: 12.5px;
+      padding: 9px 34px 9px 11px;
+      max-width: 280px;
+    }
+
+    .att-file-ext {
+      padding: 5px 7px;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      color: #818cf8;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .att-file-meta {
+      min-width: 0;
+    }
+
+    .att-file-name {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .att-file-size {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .att-remove-badge {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(15, 23, 42, 0.78);
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
     }
 
     .composer-pill {
       background: var(--bg-input);
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border: 1px solid var(--border-strong);
       border-radius: 28px;
       padding: 8px 12px;
@@ -917,9 +1197,7 @@
       transition: border-color 0.2s;
     }
 
-    .composer-pill:focus-within {
-      border-color: var(--accent);
-    }
+    .composer-pill:focus-within { border-color: var(--accent); }
 
     .plus-btn {
       width: 38px;
@@ -985,18 +1263,18 @@
       display: grid;
       place-items: center;
       flex-shrink: 0;
-      transition: transform 0.12s;
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    .send-circle-btn:active { transform: scale(0.92); }
+    .send-circle-btn:active { transform: scale(0.88); }
 
-    /* ВСПЛЫВАЮЩЕЕ МЕНЮ КНОПКИ "+" */
     .plus-popover {
       position: absolute;
       bottom: 76px;
       left: 18px;
       background: var(--bg-sidebar);
-      backdrop-filter: blur(20px);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
       border: 1px solid var(--border-strong);
       border-radius: 18px;
       padding: 6px;
@@ -1008,7 +1286,7 @@
       min-width: 210px;
     }
 
-    .plus-popover.open { display: flex; animation: fadeUp 0.16s ease; }
+    .plus-popover.open { display: flex; animation: springPop 0.22s cubic-bezier(0.22, 1.25, 0.36, 1); }
 
     .popover-item {
       display: flex;
@@ -1024,13 +1302,14 @@
     .popover-item:hover { background: var(--bg-surface-hover); }
 
     /* =====================================================================
-       ВЫПАДАЮЩЕЕ МЕНЮ ВЫБОРА МОДЕЛИ С ИКОНКАМИ НЕЙРОСЕТЕЙ
+       ВЫПАДАЮЩЕЕ МЕНЮ ВЫБОРА МОДЕЛИ (С ПРУЖИНИСТОЙ АНИМАЦИЕЙ)
     ===================================================================== */
     .model-menu-backdrop {
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.48);
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
       display: none;
       align-items: flex-start;
       justify-content: center;
@@ -1046,12 +1325,18 @@
       max-height: 76vh;
       overflow-y: auto;
       background: var(--bg-sidebar);
-      backdrop-filter: blur(24px);
+      backdrop-filter: blur(26px);
+      -webkit-backdrop-filter: blur(26px);
       border: 1px solid var(--border-strong);
       border-radius: 24px;
       padding: 12px;
       box-shadow: var(--shadow-modal);
-      animation: fadeUp 0.18s ease;
+      animation: springPop 0.25s cubic-bezier(0.22, 1.25, 0.36, 1);
+    }
+
+    @keyframes springPop {
+      0% { opacity: 0; transform: translateY(10px) scale(0.95); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .model-cat-tabs {
@@ -1091,10 +1376,11 @@
       padding: 10px 12px;
       border-radius: 14px;
       cursor: pointer;
-      transition: background 0.15s;
+      transition: background 0.15s, transform 0.15s;
     }
 
     .model-option-row:hover { background: var(--bg-surface); }
+    .model-option-row:active { transform: scale(0.98); }
 
     .model-opt-left {
       display: flex;
@@ -1125,7 +1411,8 @@
     .bento-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .bento-card {
       background: var(--bg-sidebar);
-      backdrop-filter: blur(16px);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 16px;
@@ -1189,6 +1476,7 @@
       inset: 0;
       background: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       display: none;
       align-items: center;
       justify-content: center;
@@ -1201,11 +1489,12 @@
       width: 100%;
       max-width: 420px;
       background: var(--bg-sidebar);
+      backdrop-filter: blur(24px);
       border: 1px solid var(--border-strong);
       border-radius: 24px;
       padding: 20px;
       box-shadow: var(--shadow-modal);
-      animation: fadeUp 0.2s ease;
+      animation: springPop 0.24s cubic-bezier(0.22, 1.25, 0.36, 1);
     }
 
     .setting-row {
@@ -1262,11 +1551,6 @@
       z-index: 45;
     }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
     /* =====================================================================
        МОБИЛЬНАЯ АДАПТАЦИЯ (< 768px) — ОТСТУП ПОД КНОПКИ TELEGRAM СВЕРХУ
     ===================================================================== */
@@ -1303,9 +1587,11 @@
       .sidebar.open { transform: translateX(0); }
       .mobile-backdrop.open { display: block; }
       .close-sidebar-btn, .hamburger-btn { display: inline-flex; }
+      .collapse-pc-btn { display: none; }
       .composer-model-pill { display: none; }
       .msg-row.user { max-width: 90%; }
       .prompt-chips-grid { grid-template-columns: 1fr; }
+      .scroll-bottom-fab { right: 16px; bottom: 82px; }
     }
   </style>
 </head>
@@ -1324,6 +1610,10 @@
           <div id="sideLogoFallback" class="brand-logo-fallback" style="display:none">Æ</div>
           <span class="brand-name" id="brandTitleText">Aether AI</span>
         </div>
+        <!-- Иконка сворачивания сайдбара на ПК (◧) -->
+        <button class="collapse-pc-btn" title="Свернуть/развернуть меню" onclick="toggleCollapseSidebar()">
+          <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+        </button>
         <button class="close-sidebar-btn" onclick="toggleSidebar(false)">
           <svg class="ico" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
@@ -1346,7 +1636,7 @@
             <svg class="ico" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             <span>Подписка и пакеты</span>
           </div>
-          <span class="badge-mini">PRO</span>
+          <span class="pro-shimmer-badge">PRO</span>
         </div>
         <div class="side-nav-item" id="nav-profile" onclick="switchSection('profile')">
           <div class="side-nav-left">
@@ -1396,7 +1686,7 @@
             <svg class="ico" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
           <button class="model-dropdown-trigger" onclick="openModelSelector()">
-            <span class="model-avatar-box" id="topModelAvatar"></span>
+            <span class="model-avatar-slot" id="topModelAvatar"></span>
             <span id="topModelName">Gemini 3.1 Pro</span>
             <svg class="ico" style="width:14px;height:14px;opacity:.7" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -1410,11 +1700,11 @@
 
       <!-- ==================== СЕКЦИЯ 1: ЧАТ ==================== -->
       <section id="sec-chat" class="view-section active">
-        <div id="chatScrollArea" class="chat-scroll-area">
+        <div id="chatScrollArea" class="chat-scroll-area" onscroll="handleChatScroll()">
           <div class="chat-container-inner">
-            <!-- ЭКРАН ПРИВЕТСТВИЯ + БЫСТРЫЕ КАРТОЧКИ -->
+            <!-- ЭКРАН ПРИВЕТСТВИЯ + 4 КАРТОЧКИ-ПОДСКАЗКИ -->
             <div id="welcomeHero" class="welcome-hero">
-              <div class="welcome-logo-wrap">
+              <div class="welcome-logo-wrap" id="welcomeLogoBox">
                 <img id="heroLogoImg" alt="Logo" />
               </div>
               <h1 class="welcome-title" id="welcomeGreetingText">С чего начнем?</h1>
@@ -1441,23 +1731,23 @@
                   </div>
                 </button>
 
-                <button class="prompt-chip-card" onclick="applyPromptPreset('Сделай краткую выжимку и выдели главное из текста:\n')">
+                <button class="prompt-chip-card" onclick="applyPromptPreset('Напиши структурированный и живой текст на тему: ')">
                   <div class="chip-ico-wrap">
                     <svg class="ico" viewBox="0 0 24 24"><line x1="21" y1="6" x2="3" y2="6"/><line x1="15" y1="12" x2="3" y2="12"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
                   </div>
                   <div>
-                    <div class="chip-title">Кратко пересказать</div>
-                    <div class="chip-sub">Статьи, файлы и большие тексты</div>
+                    <div class="chip-title">Написать текст</div>
+                    <div class="chip-sub">Посты, конспекты и выжимки</div>
                   </div>
                 </button>
 
-                <button class="prompt-chip-card" onclick="applyPromptPreset('Придумай 5 креативных идей для ')">
+                <button class="prompt-chip-card" onclick="applyPromptPreset('Сравни плюсы, минусы и выбери лучший вариант для ')">
                   <div class="chip-ico-wrap">
                     <svg class="ico" viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 1 4 12.7c-.6.5-1 1.3-1 2.3H9c0-1-.4-1.8-1-2.3A7 7 0 0 1 12 2z"/></svg>
                   </div>
                   <div>
-                    <div class="chip-title">Мозговой штурм</div>
-                    <div class="chip-sub">Идеи для проектов и постов</div>
+                    <div class="chip-title">Сравнить идеи</div>
+                    <div class="chip-sub">Анализ вариантов и мозговой штурм</div>
                   </div>
                 </button>
               </div>
@@ -1467,6 +1757,11 @@
             <div id="messagesStack" class="messages-stack" style="display:none"></div>
           </div>
         </div>
+
+        <!-- ПАРЯЩАЯ КНОПКА БЫСТРОГО СКРОЛЛА ВНИЗ -->
+        <button id="scrollBottomFab" class="scroll-bottom-fab" title="К последнему сообщению" onclick="scrollChatBottom(true)">
+          <svg class="ico" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+        </button>
 
         <!-- ПОЛЕ ВВОДА СНИЗУ -->
         <div class="composer-wrapper">
@@ -1481,10 +1776,8 @@
             </div>
           </div>
 
-          <div id="attachmentChipBar" class="attachment-chip-bar">
-            <span id="attachmentChipName">файл.txt</span>
-            <span style="color:#f43f5e;cursor:pointer;font-weight:700" onclick="clearAttachment()">✕</span>
-          </div>
+          <!-- ВИЗУАЛЬНАЯ КАРТОЧКА ПРИКРЕПЛЁННОГО ФОТО / ФАЙЛА -->
+          <div id="attachmentPreviewTray" class="attachment-preview-tray"></div>
 
           <input type="file" id="universalFileInput" style="display:none" onchange="handleFilePicked(event)" />
 
@@ -1620,7 +1913,7 @@
     </main>
   </div>
 
-  <!-- ==================== ВЫБОР МОДЕЛИ (С ЛОГОТИПАМИ НЕЙРОСЕТЕЙ) ==================== -->
+  <!-- ==================== ВЫБОР МОДЕЛИ ==================== -->
   <div id="modelMenuBackdrop" class="model-menu-backdrop" onclick="if(event.target===this) closeModelSelector()">
     <div class="model-menu-card">
       <div class="model-cat-tabs" id="modelCatTabs">
@@ -1685,26 +1978,64 @@
 
   <script>
     // =========================================================================
-    // 1. НАСТРОЙКИ БРЕНДА, ЛОГОТИПОВ В GITHUB И АДРЕСА API
+    // 1. НАСТРОЙКИ БРЕНДА, ЯЧЕЕК ПОД ФОТО НЕЙРОСЕТЕЙ И СВЕЧЕНИЯ ЛОГОТИПА
     // =========================================================================
     const CUSTOM_LOGO_URL = "./logo.png";
     const APP_BRAND_NAME = "Aether AI";
 
-    // Логотипы для семейств моделей из твоего репозитория GitHub!
-    // Закинь эти 5 файлов рядом с index.html (если файла нет — подставится встроенный аккуратный SVG)
     const PROVIDER_AVATARS = {
-      gemini:   { img: "./gemini.png",   bg: "linear-gradient(135deg,#2563eb,#38bdf8)", svg: `<svg viewBox="0 0 24 24" width="15" height="15" fill="#fff"><path d="M12 2c.4 5.2 4.8 9.6 10 10-5.2.4-9.6 4.8-10 10-.4-5.2-4.8-9.6-10-10 5.2-.4 9.6-4.8 10-10z"/></svg>` },
-      claude:   { img: "./claude.png",   bg: "linear-gradient(135deg,#d97706,#ea580c)", svg: `<svg viewBox="0 0 24 24" width="15" height="15" stroke="#fff" stroke-width="2" fill="none"><path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5L4.2 16.5"/></svg>` },
-      gpt:      { img: "./chatgpt.png",  bg: "linear-gradient(135deg,#059669,#10b981)", svg: `<svg viewBox="0 0 24 24" width="15" height="15" stroke="#fff" stroke-width="2" fill="none"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg>` },
-      deepseek: { img: "./deepseek.png", bg: "linear-gradient(135deg,#3b82f6,#6366f1)", svg: `<svg viewBox="0 0 24 24" width="15" height="15" stroke="#fff" stroke-width="2" fill="none"><path d="M3 15c4-6 14-6 18 0-4 4-14 4-18 0z"/><circle cx="15" cy="13" r="1" fill="#fff"/></svg>` },
-      grok:     { img: "./grok.png",     bg: "linear-gradient(135deg,#334155,#0f172a)", svg: `<svg viewBox="0 0 24 24" width="15" height="15" stroke="#fff" stroke-width="2.2" fill="none"><path d="M5 19L19 5M9 5h10v10"/></svg>` }
+      gemini: {
+        files: ["./gemini.png"],
+        bg: "linear-gradient(135deg,#2563eb,#38bdf8)",
+        glow: "rgba(139, 92, 246, 0.55)",
+        svg: `<svg viewBox="0 0 24 24" width="15" height="15" fill="#fff"><path d="M12 2c.4 5.2 4.8 9.6 10 10-5.2.4-9.6 4.8-10 10-.4-5.2-4.8-9.6-10-10 5.2-.4 9.6-4.8 10-10z"/></svg>`
+      },
+      claude: {
+        files: ["./claude.png", "./clouse.png"],
+        bg: "linear-gradient(135deg,#d97706,#ea580c)",
+        glow: "rgba(234, 88, 12, 0.52)",
+        svg: `<svg viewBox="0 0 24 24" width="15" height="15" stroke="#fff" stroke-width="2" fill="none"><path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5L4.2 16.5"/></svg>`
+      },
+      gpt: {
+        files: ["./chatgpt.png", "./gpt.png"],
+        bg: "linear-gradient(135deg,#059669,#10b981)",
+        glow: "rgba(16, 185, 129, 0.5)",
+        svg: `<svg viewBox="0 0 24 24" width="15" height="15" stroke="#fff" stroke-width="2" fill="none"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg>`
+      },
+      deepseek: {
+        files: ["./deepseek.png", "./deepsekk.png"],
+        bg: "linear-gradient(135deg,#3b82f6,#6366f1)",
+        glow: "rgba(59, 130, 246, 0.58)",
+        svg: `<svg viewBox="0 0 24 24" width="15" height="15" stroke="#fff" stroke-width="2" fill="none"><path d="M3 15c4-6 14-6 18 0-4 4-14 4-18 0z"/><circle cx="15" cy="13" r="1" fill="#fff"/></svg>`
+      },
+      grok: {
+        files: ["./grok.png"],
+        bg: "linear-gradient(135deg,#334155,#0f172a)",
+        glow: "rgba(148, 163, 184, 0.45)",
+        svg: `<svg viewBox="0 0 24 24" width="15" height="15" stroke="#fff" stroke-width="2.2" fill="none"><path d="M5 19L19 5M9 5h10v10"/></svg>`
+      }
     };
 
-    function renderModelAvatarHTML(cat, extraClass = "") {
+    function handleProviderImgError(imgEl, cat) {
+      const p = PROVIDER_AVATARS[cat];
+      const nextIdx = Number(imgEl.dataset.tryIdx || "0") + 1;
+      if (p && p.files && nextIdx < p.files.length) {
+        imgEl.dataset.tryIdx = String(nextIdx);
+        imgEl.src = p.files[nextIdx];
+        return;
+      }
+      imgEl.style.display = "none";
+      if (imgEl.nextElementSibling) {
+        imgEl.nextElementSibling.style.display = "grid";
+      }
+    }
+
+    function renderModelAvatarHTML(cat, extraClass = "", extraId = "") {
       const p = PROVIDER_AVATARS[cat] || PROVIDER_AVATARS.gpt;
+      const idAttr = extraId ? `id="${extraId}"` : "";
       return `
-        <span class="model-avatar-box ${extraClass}" style="background:${p.bg}">
-          <img src="${p.img}" alt="${cat}" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'" />
+        <span ${idAttr} class="model-avatar-slot ${extraClass}" style="background:${p.bg}">
+          <img src="${p.files[0]}" data-try-idx="0" alt="${cat}" onerror="handleProviderImgError(this, '${cat}')" />
           <span style="display:none;place-items:center;width:100%;height:100%">${p.svg}</span>
         </span>
       `;
@@ -1716,7 +2047,7 @@
     if (urlParams.get("api")) localStorage.setItem("aether_api_base", API_BASE);
 
     // =========================================================================
-    // 2. TELEGRAM WEBAPP (ПОЛНЫЙ ЭКРАН ТОЛЬКО НА ТЕЛЕФОНАХ, ЧТОБЫ НА ПК НЕ СЪЕЗЖАЛО)
+    // 2. TELEGRAM WEBAPP & HAPTIC FEEDBACK
     // =========================================================================
     const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
     if (tg) {
@@ -1738,7 +2069,7 @@
     }
 
     // =========================================================================
-    // 3. MARKDOWN + HIGHLIGHT.JS (АДАПТИВНАЯ ТЕМА) + KATEX
+    // 3. MARKDOWN + HIGHLIGHT.JS + KATEX
     // =========================================================================
     if (window.marked) {
       marked.setOptions({ breaks: true, gfm: true });
@@ -1861,8 +2192,11 @@
 
       const isPro = Boolean(STATE.is_pro || STATE.is_admin);
       ringEl.classList.toggle("pro-ring", isPro);
-      planEl.classList.toggle("is-pro", isPro);
-      planEl.textContent = isPro ? "PRO" : "Free";
+      if (isPro) {
+        planEl.innerHTML = `<span class="pro-shimmer-badge" style="font-size:9.5px;padding:1px 6px">PRO</span>`;
+      } else {
+        planEl.textContent = "Free";
+      }
 
       const photoUrl = u?.photo_url || STATE.photo_url || "";
       if (photoUrl) {
@@ -1894,7 +2228,7 @@
     }
 
     // =========================================================================
-    // 5. ТЕМА И ГРАДИЕНТ + ПЕРЕКЛЮЧЕНИЕ ПОДСВЕТКИ КОДА
+    // 5. ТЕМА, ГРАДИЕНТ И СВОРАЧИВАНИЕ САЙДБАРА НА ПК
     // =========================================================================
     function setTheme(theme) {
       localStorage.setItem("ui_theme", theme);
@@ -1912,7 +2246,7 @@
 
       if (tg && tg.setHeaderColor) {
         try {
-          const bg = isLight ? "#f8faff" : "#090b10";
+          const bg = isLight ? "#f7f9fe" : "#090b10";
           tg.setHeaderColor(bg);
           tg.setBackgroundColor(bg);
         } catch (e) {}
@@ -1926,14 +2260,26 @@
       document.getElementById("btnGradOff").classList.toggle("active", !enabled);
     }
 
+    function toggleCollapseSidebar() {
+      triggerHapticLight();
+      const sb = document.getElementById("sidebar");
+      const isCollapsed = sb.classList.toggle("collapsed");
+      localStorage.setItem("sidebar_collapsed", isCollapsed ? "1" : "0");
+    }
+
     function initSavedAppearance() {
       const savedTheme = localStorage.getItem("ui_theme") || "dark";
       const savedGrad = localStorage.getItem("ui_gradient") !== "0";
+      const savedCollapsed = localStorage.getItem("sidebar_collapsed") === "1";
       setTheme(savedTheme);
       setGradient(savedGrad);
+      if (savedCollapsed && window.innerWidth > 768) {
+        document.getElementById("sidebar").classList.add("collapsed");
+      }
 
       const sideImg = document.getElementById("sideLogoImg");
       const heroImg = document.getElementById("heroLogoImg");
+      const heroBox = document.getElementById("welcomeLogoBox");
       const fallback = document.getElementById("sideLogoFallback");
       document.getElementById("brandTitleText").textContent = APP_BRAND_NAME;
 
@@ -1942,12 +2288,15 @@
       sideImg.onerror = () => {
         sideImg.style.display = "none";
         fallback.style.display = "grid";
+      };
+      heroImg.onerror = () => {
         heroImg.style.display = "none";
+        heroBox.innerHTML = `<span style="color:#fff;font-weight:800;font-size:22px">Æ</span>`;
       };
     }
 
     // =========================================================================
-    // 6. КАТАЛОГ МОДЕЛЕЙ (С ПРИВЯЗКОЙ К АВАТАРКАМ ПО СЕТЕВОМУ СЕМЕЙСТВУ)
+    // 6. КАТАЛОГ МОДЕЛЕЙ
     // =========================================================================
     const MODELS_CATALOG = [
       { id: "gemini-3.1-pro", name: "Gemini 3.1 Pro", short: "Gemini", cat: "gemini", pro: true, desc: "Мощный мультимодальный анализ" },
@@ -1991,7 +2340,7 @@
     };
 
     // =========================================================================
-    // 7. ЛОКАЛЬНАЯ ИСТОРИЯ ЧАТОВ
+    // 7. ЛОКАЛЬНАЯ ИСТОРИЯ ЧАТОВ И УПРАВЛЕНИЕ СКРОЛЛОМ
     // =========================================================================
     let SESSIONS = JSON.parse(localStorage.getItem("ai_chat_sessions") || "[]");
     let CURRENT_SESSION_ID = null;
@@ -2010,7 +2359,23 @@
       setSendButtonMode("send");
     }
 
+    function handleChatScroll() {
+      const area = document.getElementById("chatScrollArea");
+      const fab = document.getElementById("scrollBottomFab");
+      if (!area || !fab) return;
+      const distFromBottom = area.scrollHeight - area.scrollTop - area.clientHeight;
+      fab.classList.toggle("visible", distFromBottom > 140);
+    }
+
+    function scrollChatBottom(withHaptic = false) {
+      if (withHaptic) triggerHapticLight();
+      const area = document.getElementById("chatScrollArea");
+      area.scrollTop = area.scrollHeight;
+      handleChatScroll();
+    }
+
     function startNewChat() {
+      triggerHapticLight();
       stopActiveStream();
       CURRENT_SESSION_ID = null;
       clearAttachment();
@@ -2018,12 +2383,14 @@
       document.getElementById("messagesStack").style.display = "none";
       document.getElementById("welcomeHero").style.display = "flex";
       document.getElementById("welcomeGreetingText").textContent = getRandomGreeting(getUserDisplayName());
+      document.getElementById("scrollBottomFab").classList.remove("visible");
       switchSection("chat");
       toggleSidebar(false);
       renderHistorySidebar();
     }
 
     function openSession(id) {
+      triggerHapticLight();
       stopActiveStream();
       const sess = SESSIONS.find(s => s.id === id);
       if (!sess) return;
@@ -2074,9 +2441,17 @@
     }
 
     // =========================================================================
-    // 8. КАРТОЧКИ-ПОДСКАЗКИ И ПРИКРЕПЛЕНИЕ ФАЙЛОВ/ФОТО
+    // 8. ВИЗУАЛЬНЫЕ КАРТОЧКИ ПРИКРЕПЛЁННЫХ ФАЙЛОВ И ПРЕВЬЮ ФОТО
     // =========================================================================
+    function formatBytes(bytes) {
+      if (!bytes) return "0 Б";
+      if (bytes < 1024) return bytes + " Б";
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " КБ";
+      return (bytes / (1024 * 1024)).toFixed(1) + " МБ";
+    }
+
     function applyPromptPreset(prefix) {
+      triggerHapticLight();
       const ta = document.getElementById("chatTextarea");
       ta.value = prefix;
       ta.focus();
@@ -2085,6 +2460,7 @@
 
     function togglePlusPopover(ev) {
       ev.stopPropagation();
+      triggerHapticLight();
       document.getElementById("plusPopover").classList.toggle("open");
     }
 
@@ -2113,10 +2489,12 @@
           STATE.attachment = {
             type: "image",
             name: file.name,
+            size: file.size,
             b64: dataUrl.split(",")[1],
             previewUrl: dataUrl
           };
-          showAttachmentBar("Фото: " + file.name);
+          renderAttachmentTray();
+          triggerHapticLight();
         };
         reader.readAsDataURL(file);
       } else {
@@ -2124,22 +2502,51 @@
           STATE.attachment = {
             type: "file",
             name: file.name,
+            size: file.size,
             textContent: String(reader.result || "").slice(0, 25000)
           };
-          showAttachmentBar("Файл: " + file.name);
+          renderAttachmentTray();
+          triggerHapticLight();
         };
         reader.readAsText(file);
       }
     }
 
-    function showAttachmentBar(label) {
-      document.getElementById("attachmentChipName").textContent = label;
-      document.getElementById("attachmentChipBar").style.display = "flex";
+    function renderAttachmentTray() {
+      const tray = document.getElementById("attachmentPreviewTray");
+      const att = STATE.attachment;
+      if (!att) {
+        tray.style.display = "none";
+        tray.innerHTML = "";
+        return;
+      }
+
+      tray.style.display = "flex";
+      if (att.type === "image") {
+        tray.innerHTML = `
+          <div class="att-image-card">
+            <img src="${att.previewUrl}" alt="Preview" />
+            <button class="att-remove-badge" title="Убрать" onclick="clearAttachment()">✕</button>
+          </div>
+        `;
+      } else {
+        const ext = (att.name.split(".").pop() || "FILE").slice(0, 5);
+        tray.innerHTML = `
+          <div class="att-file-card">
+            <span class="att-file-ext">${escapeHtml(ext)}</span>
+            <div class="att-file-meta">
+              <div class="att-file-name">${escapeHtml(att.name)}</div>
+              <div class="att-file-size">${formatBytes(att.size)}</div>
+            </div>
+            <button class="att-remove-badge" title="Убрать" onclick="clearAttachment()">✕</button>
+          </div>
+        `;
+      }
     }
 
     function clearAttachment() {
       STATE.attachment = null;
-      document.getElementById("attachmentChipBar").style.display = "none";
+      renderAttachmentTray();
     }
 
     // =========================================================================
@@ -2230,10 +2637,15 @@
         contentEl.className = "md-content";
         if (isSkeleton) {
           contentEl.innerHTML = `
-            <div class="skeleton-thinking">
-              <div class="skel-bar w1"></div>
-              <div class="skel-bar w2"></div>
-              <div class="skel-bar w3"></div>
+            <div class="skeleton-thinking-box">
+              <div class="skeleton-pulse-logo">
+                <img src="${CUSTOM_LOGO_URL}" alt="Æ" onerror="this.style.display='none';this.parentNode.textContent='Æ'" />
+              </div>
+              <div class="skeleton-bars-col">
+                <div class="skel-bar w1"></div>
+                <div class="skel-bar w2"></div>
+                <div class="skel-bar w3"></div>
+              </div>
             </div>
           `;
         } else {
@@ -2288,11 +2700,6 @@
       };
     }
 
-    function scrollChatBottom() {
-      const area = document.getElementById("chatScrollArea");
-      area.scrollTop = area.scrollHeight;
-    }
-
     async function sendMessage() {
       const ta = document.getElementById("chatTextarea");
       const rawText = ta.value.trim();
@@ -2300,6 +2707,7 @@
 
       if (!rawText && !att) return;
 
+      triggerHapticLight();
       ta.value = "";
       ta.style.height = "auto";
       clearAttachment();
@@ -2369,9 +2777,10 @@
     }
 
     // =========================================================================
-    // 10. ВЫБОР МОДЕЛЕЙ И НАВИГАЦИЯ
+    // 10. ВЫБОР МОДЕЛЕЙ (С МИКРО-ВИБРАЦИЕЙ И СВЕЧЕНИЕМ ЛОГО) И НАВИГАЦИЯ
     // =========================================================================
     function openModelSelector() {
+      triggerHapticLight();
       renderModelOptions();
       document.getElementById("modelMenuBackdrop").classList.add("open");
     }
@@ -2381,6 +2790,7 @@
     }
 
     function setModelFilter(cat, btn) {
+      triggerHapticLight();
       STATE.model_filter = cat;
       document.querySelectorAll(".m-cat-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
@@ -2403,7 +2813,7 @@
               <div>
                 <div class="model-opt-title">
                   <span>${m.name}</span>
-                  ${locked ? `<span class="badge-mini" style="font-size:10px">PRO</span>` : ""}
+                  ${locked ? `<span class="pro-shimmer-badge" style="font-size:9.5px;padding:1px 6px">PRO</span>` : ""}
                 </div>
                 <div class="model-opt-desc">${m.desc}</div>
               </div>
@@ -2423,6 +2833,7 @@
         switchSection("shop");
         return;
       }
+      triggerHapticSuccess();
       STATE.selected_model = modelId;
       localStorage.setItem("selected_model", modelId);
       closeModelSelector();
@@ -2478,9 +2889,13 @@
     function syncUI() {
       const name = getUserDisplayName();
       const mInfo = MODELS_CATALOG.find(m => m.id === STATE.selected_model) || { name: STATE.selected_model, short: "AI", cat: "gpt" };
+      const providerCfg = PROVIDER_AVATARS[mInfo.cat] || PROVIDER_AVATARS.gpt;
+
+      // Меняем цвет свечения вокруг центрального логотипа под выбранную нейросеть
+      document.documentElement.style.setProperty("--provider-glow", providerCfg.glow);
 
       document.getElementById("topModelName").textContent = mInfo.name;
-      document.getElementById("topModelAvatar").outerHTML = renderModelAvatarHTML(mInfo.cat).replace('class="model-avatar-box "', 'id="topModelAvatar" class="model-avatar-box"');
+      document.getElementById("topModelAvatar").outerHTML = renderModelAvatarHTML(mInfo.cat, "", "topModelAvatar");
       document.getElementById("pillModelShort").textContent = mInfo.short;
       document.getElementById("sideUserName").textContent = name;
       applyUserProfileAvatar();
