@@ -26,6 +26,7 @@
       --grad-aura: radial-gradient(circle at 50% 48%, rgba(37, 65, 178, 0.28) 0%, rgba(17, 24, 59, 0.14) 38%, transparent 70%);
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --tg-content-safe-top: var(--tg-content-safe-area-inset-top, 0px);
     }
 
     body.theme-light {
@@ -261,7 +262,7 @@
       opacity: 1;
     }
 
-    /* НИЖНИЙ ПРОФИЛЬ И НАСТРОЙКИ В САЙДБАРЕ */
+    /* НИЖНИЙ ПРОФИЛЬ (С АВАТАРКОЙ ТГ) И НАСТРОЙКИ В САЙДБАРЕ */
     .sidebar-footer {
       border-top: 1px solid var(--border);
       padding-top: 10px;
@@ -287,17 +288,29 @@
       background: var(--bg-surface);
     }
 
-    .user-avatar-circle {
-      width: 32px;
-      height: 32px;
+    .user-avatar-wrap {
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
+      position: relative;
+      flex-shrink: 0;
+      overflow: hidden;
       background: linear-gradient(135deg, #6366f1, #8b5cf6);
-      color: #fff;
       display: grid;
       place-items: center;
+    }
+
+    .user-avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .user-avatar-letter {
+      color: #fff;
       font-weight: 700;
-      font-size: 13px;
-      flex-shrink: 0;
+      font-size: 14px;
     }
 
     .user-mini-name {
@@ -349,8 +362,8 @@
 
     /* ВЕРХНЯЯ ПАНЕЛЬ В РАБОЧЕЙ ЗОНЕ */
     .stage-topbar {
-      height: 56px;
-      padding: 0 18px;
+      min-height: 56px;
+      padding: 6px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -370,7 +383,7 @@
       color: var(--text-main);
       font-size: 22px;
       cursor: pointer;
-      padding: 6px;
+      padding: 6px 8px;
       border-radius: 10px;
     }
 
@@ -413,7 +426,6 @@
       display: none;
       flex: 1;
       flex-direction: column;
-      height: calc(100% - 56px);
       overflow: hidden;
     }
 
@@ -551,7 +563,7 @@
       margin-bottom: 6px;
     }
 
-    /* НИЖНЯЯ КАПСУЛА ВВОДА (КАК НА СКРИНАХ GEMINI) */
+    /* НИЖНЯЯ КАПСУЛА ВВОДА */
     .composer-wrapper {
       padding: 8px 16px 18px;
       width: 100%;
@@ -703,7 +715,7 @@
     }
 
     /* =====================================================================
-       ВЫПАДАЮЩЕЕ МЕНЮ ВЫБОРА МОДЕЛИ (КАК НА 3 СКРИНЕ)
+       ВЫПАДАЮЩЕЕ МЕНЮ ВЫБОРА МОДЕЛИ
     ===================================================================== */
     .model-menu-backdrop {
       position: fixed;
@@ -712,7 +724,7 @@
       display: none;
       align-items: flex-start;
       justify-content: center;
-      padding-top: 64px;
+      padding-top: 72px;
       z-index: 70;
     }
 
@@ -943,7 +955,7 @@
 
     .toast-box {
       position: fixed;
-      top: 18px;
+      top: 56px;
       left: 50%;
       transform: translateX(-50%);
       background: var(--bg-surface-hover);
@@ -972,9 +984,16 @@
     }
 
     /* =====================================================================
-       МОБИЛЬНАЯ АДАПТАЦИЯ (< 768px)
+       МОБИЛЬНАЯ АДАПТАЦИЯ (< 768px) — ОТСТУП ОТ КНОПКИ ЗАКРЫТЬ В ТГ
     ===================================================================== */
     @media (max-width: 768px) {
+      /* Опускаем верхнюю панель на телефоне ниже системной шапки Telegram */
+      .stage-topbar {
+        padding-top: calc(44px + var(--tg-content-safe-top));
+        padding-bottom: 8px;
+        min-height: 92px;
+      }
+
       .sidebar {
         position: fixed;
         top: 0;
@@ -983,7 +1002,8 @@
         width: 82%;
         max-width: 310px;
         transform: translateX(-100%);
-        padding-top: calc(14px + var(--safe-top));
+        /* Опускаем содержимое шторки ниже кнопки "Закрыть" в Telegram */
+        padding-top: calc(50px + var(--safe-top) + var(--tg-content-safe-top));
         padding-bottom: calc(14px + var(--safe-bottom));
       }
 
@@ -1005,6 +1025,10 @@
 
       .msg-row {
         max-width: 94%;
+      }
+
+      .model-menu-backdrop {
+        padding-top: 102px;
       }
     }
   </style>
@@ -1054,10 +1078,13 @@
 
       <div id="historyList" class="history-list"></div>
 
-      <!-- НИЖНИЙ БЛОК: ПОЛЬЗОВАТЕЛЬ + НАСТРОЙКИ ТЕМЫ -->
+      <!-- НИЖНИЙ БЛОК: АВАТАРКА ИЗ ТГ + ИМЯ + НАСТРОЙКИ ТЕМЫ -->
       <div class="sidebar-footer">
         <div class="user-mini-card" onclick="switchSection('profile')">
-          <div class="user-avatar-circle" id="sideUserAvatar">Д</div>
+          <div class="user-avatar-wrap">
+            <img id="sideUserAvatarImg" class="user-avatar-img" alt="Avatar" />
+            <span id="sideUserAvatarLetter" class="user-avatar-letter">Д</span>
+          </div>
           <div style="min-width:0">
             <div class="user-mini-name" id="sideUserName">Пользователь</div>
             <div class="user-mini-plan" id="sideUserPlan">Free</div>
@@ -1249,7 +1276,7 @@
     </main>
   </div>
 
-  <!-- ==================== ВЫБОР МОДЕЛИ (POPUP КАК НА 3 СКРИНЕ) ==================== -->
+  <!-- ==================== ВЫБОР МОДЕЛИ ==================== -->
   <div id="modelMenuBackdrop" class="model-menu-backdrop" onclick="if(event.target===this) closeModelSelector()">
     <div class="model-menu-card">
       <div class="model-cat-tabs" id="modelCatTabs">
@@ -1314,7 +1341,6 @@
     // =========================================================================
     // 1. ТВОИ НАСТРОЙКИ (ЛОГОТИП В РЕПОЗИТОРИИ GITHUB И АДРЕС API)
     // =========================================================================
-    // Закинь свой файл логотипа (например logo.png) в корень GitHub рядом с index.html
     const CUSTOM_LOGO_URL = "./logo.png";
     const APP_BRAND_NAME = "AI Studio";
 
@@ -1338,7 +1364,7 @@
     }
 
     // =========================================================================
-    // 3. ОПРЕДЕЛЕНИЕ ИМЕНИ ПОЛЬЗОВАТЕЛЯ И ЖИВЫЕ ПРИВЕТСТВИЯ
+    // 3. ИМЯ, АВАТАРКА ИЗ TELEGRAM И ЖИВЫЕ ПРИВЕТСТВИЯ
     // =========================================================================
     function getUserDisplayName() {
       const u = tg?.initDataUnsafe?.user;
@@ -1346,6 +1372,28 @@
       if (u.first_name && u.first_name.trim()) return u.first_name.trim();
       if (u.username && u.username.trim()) return "@" + u.username.trim();
       return "Друг";
+    }
+
+    function applyTelegramAvatar(photoUrlFromApi = null) {
+      const u = tg?.initDataUnsafe?.user;
+      const photoUrl = photoUrlFromApi || u?.photo_url || "";
+      const imgEl = document.getElementById("sideUserAvatarImg");
+      const letterEl = document.getElementById("sideUserAvatarLetter");
+      const name = getUserDisplayName();
+      letterEl.textContent = name.replace("@", "").charAt(0).toUpperCase() || "U";
+
+      if (photoUrl) {
+        imgEl.src = photoUrl;
+        imgEl.style.display = "block";
+        letterEl.style.display = "none";
+        imgEl.onerror = () => {
+          imgEl.style.display = "none";
+          letterEl.style.display = "block";
+        };
+      } else {
+        imgEl.style.display = "none";
+        letterEl.style.display = "block";
+      }
     }
 
     function getRandomGreeting(name) {
@@ -1390,7 +1438,6 @@
       setTheme(savedTheme);
       setGradient(savedGrad);
 
-      // Подгрузка кастомного логотипа из GitHub
       const sideImg = document.getElementById("sideLogoImg");
       const heroImg = document.getElementById("heroLogoImg");
       const fallback = document.getElementById("sideLogoFallback");
@@ -1446,11 +1493,11 @@
       ref_link: "https://t.me/AetherNeural_bot",
       discount_percent: 0,
       model_filter: "all",
-      attachment: null // { type: 'image'|'file', name, b64, previewUrl, textContent }
+      attachment: null
     };
 
     // =========================================================================
-    // 6. ЛОКАЛЬНАЯ ИСТОРИЯ ЧАТОВ (СОХРАНЯЕТСЯ В БРАУЗЕРЕ)
+    // 6. ЛОКАЛЬНАЯ ИСТОРИЯ ЧАТОВ
     // =========================================================================
     let SESSIONS = JSON.parse(localStorage.getItem("ai_chat_sessions") || "[]");
     let CURRENT_SESSION_ID = null;
@@ -1495,9 +1542,7 @@
       ev.stopPropagation();
       SESSIONS = SESSIONS.filter(s => s.id !== id);
       saveSessions();
-      if (CURRENT_SESSION_ID === id) {
-        startNewChat();
-      }
+      if (CURRENT_SESSION_ID === id) startNewChat();
     }
 
     function clearAllSessions() {
@@ -1651,12 +1696,10 @@
       ta.style.height = "auto";
       clearAttachment();
 
-      // Скрываем приветствие, показываем стек сообщений
       document.getElementById("welcomeHero").style.display = "none";
       const stack = document.getElementById("messagesStack");
       stack.style.display = "flex";
 
-      // Создаём новую сессию в истории, если её нет
       if (!CURRENT_SESSION_ID) {
         CURRENT_SESSION_ID = "chat_" + Date.now();
         const titlePreview = rawText || (att ? att.name : "Новый диалог");
@@ -1676,10 +1719,12 @@
       saveSessions();
       scrollChatBottom();
 
-      // Формируем текст с учётом прикреплённого файла
       let finalPrompt = rawText;
       if (att?.type === "file") {
-        finalPrompt = `${rawText || "Проанализируй содержимое файла:"}\n\n--- Файл: ${att.name} ---\n${att.textContent}`;
+        finalPrompt = `${rawText || "Проанализируй содержимое файла:"}
+
+--- Файл: ${att.name} ---
+${att.textContent}`;
       } else if (!finalPrompt && att?.type === "image") {
         finalPrompt = "Подробно разбери и реши то, что изображено на фото.";
       }
@@ -1813,8 +1858,8 @@
       document.getElementById("topModelName").textContent = mInfo.name;
       document.getElementById("pillModelShort").textContent = mInfo.short;
       document.getElementById("sideUserName").textContent = name;
-      document.getElementById("sideUserAvatar").textContent = name.replace("@", "").charAt(0).toUpperCase() || "U";
       document.getElementById("sideUserPlan").textContent = STATE.is_pro ? "PRO" : "Free";
+      applyTelegramAvatar(STATE.photo_url || null);
 
       const totalAvail = (STATE.daily_left || 0) + (STATE.extra_requests || 0);
       document.getElementById("topQuotaText").textContent = STATE.is_pro ? "👑 PRO" : `⚡ ${totalAvail} запр.`;
@@ -1911,6 +1956,7 @@
 
     async function initApp() {
       initSavedAppearance();
+      applyTelegramAvatar();
       document.getElementById("welcomeGreetingText").textContent = getRandomGreeting(getUserDisplayName());
       renderHistorySidebar();
       syncUI();
