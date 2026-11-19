@@ -3,8 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>AI Studio — Telegram Mini App</title>
+  <title>Aether AI — Telegram Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Markdown (marked.js) + Подсветка кода (highlight.js) + Формулы (KaTeX) -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
   <style>
     /* =====================================================================
        ТЕМЫ И ПЕРЕМЕННЫЕ (ТЁМНАЯ ПО УМОЛЧАНИЮ + СВЕТЛАЯ)
@@ -26,7 +35,7 @@
       --grad-aura: radial-gradient(circle at 50% 48%, rgba(37, 65, 178, 0.28) 0%, rgba(17, 24, 59, 0.14) 38%, transparent 70%);
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
-      --tg-content-safe-top: var(--tg-content-safe-area-inset-top, 0px);
+      --tg-content-top: var(--tg-content-safe-area-inset-top, 0px);
     }
 
     body.theme-light {
@@ -74,7 +83,7 @@
       display: flex;
       height: 100dvh;
       width: 100vw;
-      padding-top: var(--safe-top);
+      padding-top: calc(var(--safe-top) + var(--tg-content-top));
       padding-bottom: var(--safe-bottom);
       position: relative;
     }
@@ -262,7 +271,7 @@
       opacity: 1;
     }
 
-    /* НИЖНИЙ ПРОФИЛЬ (С АВАТАРКОЙ ТГ) И НАСТРОЙКИ В САЙДБАРЕ */
+    /* НИЖНИЙ ПРОФИЛЬ (С АВАТАРКОЙ TELEGRAM) И НАСТРОЙКИ В САЙДБАРЕ */
     .sidebar-footer {
       border-top: 1px solid var(--border);
       padding-top: 10px;
@@ -298,6 +307,7 @@
       background: linear-gradient(135deg, #6366f1, #8b5cf6);
       display: grid;
       place-items: center;
+      border: 1.5px solid var(--border-strong);
     }
 
     .user-avatar-img {
@@ -362,8 +372,8 @@
 
     /* ВЕРХНЯЯ ПАНЕЛЬ В РАБОЧЕЙ ЗОНЕ */
     .stage-topbar {
-      min-height: 56px;
-      padding: 6px 18px;
+      height: 56px;
+      padding: 0 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -383,7 +393,7 @@
       color: var(--text-main);
       font-size: 22px;
       cursor: pointer;
-      padding: 6px 8px;
+      padding: 6px;
       border-radius: 10px;
     }
 
@@ -426,6 +436,7 @@
       display: none;
       flex: 1;
       flex-direction: column;
+      height: calc(100% - 56px);
       overflow: hidden;
     }
 
@@ -488,18 +499,18 @@
       max-width: 460px;
     }
 
-    /* СООБЩЕНИЯ */
+    /* СООБЩЕНИЯ И MARKDOWN / KATEX / КОД */
     .messages-stack {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 22px;
       padding-bottom: 16px;
     }
 
     .msg-row {
       display: flex;
       flex-direction: column;
-      max-width: 86%;
+      max-width: 88%;
       animation: fadeUp 0.2s ease;
     }
 
@@ -511,14 +522,15 @@
     .msg-row.ai {
       align-self: flex-start;
       align-items: flex-start;
+      width: 100%;
+      max-width: 100%;
     }
 
     .msg-bubble {
       padding: 13px 17px;
       border-radius: 20px;
-      font-size: 14.5px;
-      line-height: 1.55;
-      white-space: pre-wrap;
+      font-size: 15px;
+      line-height: 1.6;
       word-wrap: break-word;
     }
 
@@ -526,12 +538,156 @@
       background: var(--bg-surface-hover);
       color: var(--text-main);
       border-bottom-right-radius: 6px;
+      white-space: pre-wrap;
     }
 
     .msg-row.ai .msg-bubble {
       background: transparent;
       color: var(--text-main);
-      padding-left: 4px;
+      padding: 4px 4px 6px;
+      width: 100%;
+    }
+
+    /* СТИЛИ MARKDOWN ВНУТРИ ОТВЕТА ИИ */
+    .md-content p { margin-bottom: 10px; }
+    .md-content p:last-child { margin-bottom: 0; }
+    .md-content h1, .md-content h2, .md-content h3 {
+      margin: 14px 0 8px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .md-content h1 { font-size: 1.3em; }
+    .md-content h2 { font-size: 1.18em; }
+    .md-content h3 { font-size: 1.06em; }
+    .md-content ul, .md-content ol {
+      margin: 8px 0 12px 22px;
+    }
+    .md-content li { margin-bottom: 5px; }
+    .md-content strong { font-weight: 700; }
+    .md-content blockquote {
+      border-left: 3px solid var(--accent);
+      padding-left: 12px;
+      color: var(--text-muted);
+      margin: 10px 0;
+    }
+    .md-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 13.5px;
+      display: block;
+      overflow-x: auto;
+    }
+    .md-content th, .md-content td {
+      border: 1px solid var(--border-strong);
+      padding: 8px 11px;
+      text-align: left;
+    }
+    .md-content th {
+      background: var(--bg-surface);
+      font-weight: 600;
+    }
+    .md-content code:not(pre code) {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.88em;
+    }
+
+    /* БЛОКИ КОДА С ШАПКОЙ И КНОПКОЙ «КОПИРОВАТЬ КОД» */
+    .code-block-wrapper {
+      margin: 12px 0;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border-strong);
+      background: #161822;
+    }
+
+    .code-block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 14px;
+      background: #1f2230;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      font-size: 12px;
+      color: #a3acc2;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .copy-code-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e2e8f0;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .copy-code-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .code-block-wrapper pre {
+      margin: 0;
+      padding: 13px 15px;
+      overflow-x: auto;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+
+    .code-block-wrapper pre code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: transparent !important;
+      padding: 0 !important;
+    }
+
+    /* KaTeX overflow protection */
+    .katex-display {
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 6px 0;
+    }
+
+    /* ПАНЕЛЬ ДЕЙСТВИЙ ПОД ОТВЕТОМ ИИ (3 ИКОНКИ) */
+    .ai-actions-bar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+      padding-left: 2px;
+    }
+
+    .ai-act-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 9px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .ai-act-btn:hover {
+      background: var(--bg-surface);
+      color: var(--text-main);
+    }
+
+    .ai-act-btn.speaking {
+      color: var(--accent);
+      background: var(--accent-soft);
     }
 
     .msg-model-tag {
@@ -563,7 +719,7 @@
       margin-bottom: 6px;
     }
 
-    /* НИЖНЯЯ КАПСУЛА ВВОДА */
+    /* НИЖНЯЯ КАПСУЛА ВВОДА (КАК НА СКРИНАХ GEMINI) */
     .composer-wrapper {
       padding: 8px 16px 18px;
       width: 100%;
@@ -715,7 +871,7 @@
     }
 
     /* =====================================================================
-       ВЫПАДАЮЩЕЕ МЕНЮ ВЫБОРА МОДЕЛИ
+       ВЫПАДАЮЩЕЕ МЕНЮ ВЫБОРА МОДЕЛИ (КАК НА 3 СКРИНЕ)
     ===================================================================== */
     .model-menu-backdrop {
       position: fixed;
@@ -724,7 +880,7 @@
       display: none;
       align-items: flex-start;
       justify-content: center;
-      padding-top: 72px;
+      padding-top: 64px;
       z-index: 70;
     }
 
@@ -984,14 +1140,24 @@
     }
 
     /* =====================================================================
-       МОБИЛЬНАЯ АДАПТАЦИЯ (< 768px) — ОТСТУП ОТ КНОПКИ ЗАКРЫТЬ В ТГ
+       МОБИЛЬНАЯ АДАПТАЦИЯ (< 768px) — ОТСТУП ПОД КНОПКИ TELEGRAM СВЕРХУ
     ===================================================================== */
     @media (max-width: 768px) {
-      /* Опускаем верхнюю панель на телефоне ниже системной шапки Telegram */
+      .app-shell {
+        padding-top: max(46px, calc(var(--safe-top) + var(--tg-content-top) + 38px));
+      }
+
       .stage-topbar {
-        padding-top: calc(44px + var(--tg-content-safe-top));
-        padding-bottom: 8px;
-        min-height: 92px;
+        height: 54px;
+        padding: 4px 14px 0;
+      }
+
+      .view-section {
+        height: calc(100% - 54px);
+      }
+
+      .model-menu-backdrop {
+        padding-top: max(106px, calc(var(--safe-top) + var(--tg-content-top) + 96px));
       }
 
       .sidebar {
@@ -1002,9 +1168,8 @@
         width: 82%;
         max-width: 310px;
         transform: translateX(-100%);
-        /* Опускаем содержимое шторки ниже кнопки "Закрыть" в Telegram */
-        padding-top: calc(50px + var(--safe-top) + var(--tg-content-safe-top));
-        padding-bottom: calc(14px + var(--safe-bottom));
+        padding-top: max(50px, calc(var(--safe-top) + var(--tg-content-top) + 42px));
+        padding-bottom: calc(16px + var(--safe-bottom));
       }
 
       .sidebar.open {
@@ -1023,12 +1188,8 @@
         display: none;
       }
 
-      .msg-row {
-        max-width: 94%;
-      }
-
-      .model-menu-backdrop {
-        padding-top: 102px;
+      .msg-row.user {
+        max-width: 90%;
       }
     }
   </style>
@@ -1044,8 +1205,8 @@
       <div class="sidebar-header">
         <div class="brand-box" onclick="startNewChat()">
           <img id="sideLogoImg" class="brand-logo-img" alt="Logo" />
-          <div id="sideLogoFallback" class="brand-logo-fallback" style="display:none">✦</div>
-          <span class="brand-name" id="brandTitleText">AI Studio</span>
+          <div id="sideLogoFallback" class="brand-logo-fallback" style="display:none">Æ</div>
+          <span class="brand-name" id="brandTitleText">Aether AI</span>
         </div>
         <button class="close-sidebar-btn" onclick="toggleSidebar(false)">✕</button>
       </div>
@@ -1078,7 +1239,7 @@
 
       <div id="historyList" class="history-list"></div>
 
-      <!-- НИЖНИЙ БЛОК: АВАТАРКА ИЗ ТГ + ИМЯ + НАСТРОЙКИ ТЕМЫ -->
+      <!-- НИЖНИЙ БЛОК: АВАТАРКА ПРОФИЛЯ TELEGRAM + ИМЯ + НАСТРОЙКИ ТЕМЫ -->
       <div class="sidebar-footer">
         <div class="user-mini-card" onclick="switchSection('profile')">
           <div class="user-avatar-wrap">
@@ -1151,7 +1312,7 @@
 
           <div class="composer-pill">
             <button class="plus-btn" title="Прикрепить фото или файл" onclick="togglePlusPopover(event)">+</button>
-            <textarea id="chatTextarea" class="chat-textarea" rows="1" placeholder="Спросить нейросеть..." oninput="autoResizeTextarea(this)" onkeydown="handleTextareaKey(event)"></textarea>
+            <textarea id="chatTextarea" class="chat-textarea" rows="1" placeholder="Спросить Aether AI..." oninput="autoResizeTextarea(this)" onkeydown="handleTextareaKey(event)"></textarea>
             <button class="composer-model-pill" onclick="openModelSelector()">
               <span id="pillModelShort">Gemini</span> ▾
             </button>
@@ -1276,7 +1437,7 @@
     </main>
   </div>
 
-  <!-- ==================== ВЫБОР МОДЕЛИ ==================== -->
+  <!-- ==================== ВЫБОР МОДЕЛИ (POPUP КАК НА 3 СКРИНЕ) ==================== -->
   <div id="modelMenuBackdrop" class="model-menu-backdrop" onclick="if(event.target===this) closeModelSelector()">
     <div class="model-menu-card">
       <div class="model-cat-tabs" id="modelCatTabs">
@@ -1339,10 +1500,10 @@
 
   <script>
     // =========================================================================
-    // 1. ТВОИ НАСТРОЙКИ (ЛОГОТИП В РЕПОЗИТОРИИ GITHUB И АДРЕС API)
+    // 1. НАСТРОЙКИ БРЕНДА, ЛОГОТИПА В РЕПОЗИТОРИИ GITHUB И АДРЕСА API
     // =========================================================================
     const CUSTOM_LOGO_URL = "./logo.png";
-    const APP_BRAND_NAME = "AI Studio";
+    const APP_BRAND_NAME = "Aether AI";
 
     const urlParams = new URLSearchParams(window.location.search);
     const DEFAULT_FALLBACK_API = "https://bot-1794663977-3842-danzler11.bothost.tech";
@@ -1363,8 +1524,130 @@
       } catch (e) {}
     }
 
+    function triggerHapticSuccess() {
+      try {
+        if (tg && tg.HapticFeedback) {
+          tg.HapticFeedback.notificationOccurred("success");
+        }
+      } catch (e) {}
+    }
+
+    function triggerHapticLight() {
+      try {
+        if (tg && tg.HapticFeedback) {
+          tg.HapticFeedback.impactOccurred("light");
+        }
+      } catch (e) {}
+    }
+
     // =========================================================================
-    // 3. ИМЯ, АВАТАРКА ИЗ TELEGRAM И ЖИВЫЕ ПРИВЕТСТВИЯ
+    // 3. НАСТРОЙКА MARKDOWN + HIGHLIGHT.JS + KATEX (ФОРМУЛЫ И КОД)
+    // =========================================================================
+    if (window.marked) {
+      marked.setOptions({
+        breaks: true,
+        gfm: true
+      });
+    }
+
+    function renderRichMarkdownAndMath(containerEl, rawText) {
+      const text = String(rawText || "");
+      if (!window.marked) {
+        containerEl.textContent = text;
+        return;
+      }
+
+      // Защищаем LaTeX-блоки от поломки парсером Markdown
+      const mathBlocks = [];
+      let protectedText = text
+        .replace(/\$\$([\s\S]+?)\$\$/g, (_, eq) => {
+          const id = `@@MATH_BLOCK_${mathBlocks.length}@@`;
+          mathBlocks.push({ id, display: true, eq });
+          return id;
+        })
+        .replace(/\\\[([\s\S]+?)\\\]/g, (_, eq) => {
+          const id = `@@MATH_BLOCK_${mathBlocks.length}@@`;
+          mathBlocks.push({ id, display: true, eq });
+          return id;
+        })
+        .replace(/\\\(([\s\S]+?)\\\)/g, (_, eq) => {
+          const id = `@@MATH_BLOCK_${mathBlocks.length}@@`;
+          mathBlocks.push({ id, display: false, eq });
+          return id;
+        })
+        .replace(/(^|[^\\$])\$([^\s$][^$\n]*?[^\s$]|[^\s$])\$(?!\$)/g, (m, prefix, eq) => {
+          const id = `@@MATH_BLOCK_${mathBlocks.length}@@`;
+          mathBlocks.push({ id, display: false, eq });
+          return prefix + id;
+        });
+
+      let html = marked.parse(protectedText);
+
+      // Возвращаем формулы обратно перед рендером KaTeX
+      mathBlocks.forEach(item => {
+        const delim = item.display ? `$$${item.eq}$$` : `$${item.eq}$`;
+        html = html.replace(item.id, delim);
+      });
+
+      containerEl.innerHTML = html;
+
+      // Оборачиваем каждый <pre><code> в красивую карточку с кнопкой «Копировать код»
+      containerEl.querySelectorAll("pre").forEach(preEl => {
+        const codeEl = preEl.querySelector("code");
+        if (!codeEl) return;
+
+        if (window.hljs) {
+          hljs.highlightElement(codeEl);
+        }
+
+        const langMatch = (codeEl.className || "").match(/language-([a-zA-Z0-9_+-]+)/);
+        const langName = langMatch ? langMatch[1] : "code";
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "code-block-wrapper";
+
+        const header = document.createElement("div");
+        header.className = "code-block-header";
+
+        const langSpan = document.createElement("span");
+        langSpan.textContent = langName;
+
+        const copyBtn = document.createElement("button");
+        copyBtn.className = "copy-code-btn";
+        copyBtn.innerHTML = "📋 Копировать код";
+        copyBtn.onclick = () => {
+          navigator.clipboard?.writeText(codeEl.innerText);
+          triggerHapticSuccess();
+          copyBtn.innerHTML = "✅ Скопировано";
+          setTimeout(() => { copyBtn.innerHTML = "📋 Копировать код"; }, 2000);
+        };
+
+        header.appendChild(langSpan);
+        header.appendChild(copyBtn);
+
+        preEl.parentNode.insertBefore(wrapper, preEl);
+        wrapper.appendChild(header);
+        wrapper.appendChild(preEl);
+      });
+
+      // Рендерим математические формулы через KaTeX
+      if (window.renderMathInElement) {
+        try {
+          renderMathInElement(containerEl, {
+            delimiters: [
+              { left: "$$", right: "$$", display: true },
+              { left: "$", right: "$", display: false },
+              { left: "\\(", right: "\\)", display: false },
+              { left: "\\[", right: "\\]", display: true }
+            ],
+            throwOnError: false
+          });
+        } catch (e) {}
+      }
+    }
+
+    // =========================================================================
+    // 4. ОПРЕДЕЛЕНИЕ ИМЕНИ, АВАТАРКИ ПОЛЬЗОВАТЕЛЯ И ЖИВЫЕ ПРИВЕТСТВИЯ
     // =========================================================================
     function getUserDisplayName() {
       const u = tg?.initDataUnsafe?.user;
@@ -1374,18 +1657,22 @@
       return "Друг";
     }
 
-    function applyTelegramAvatar(photoUrlFromApi = null) {
+    function applyUserProfileAvatar() {
       const u = tg?.initDataUnsafe?.user;
-      const photoUrl = photoUrlFromApi || u?.photo_url || "";
+      const name = getUserDisplayName();
+      const firstLetter = name.replace("@", "").charAt(0).toUpperCase() || "Д";
+
       const imgEl = document.getElementById("sideUserAvatarImg");
       const letterEl = document.getElementById("sideUserAvatarLetter");
-      const name = getUserDisplayName();
-      letterEl.textContent = name.replace("@", "").charAt(0).toUpperCase() || "U";
+      letterEl.textContent = firstLetter;
 
+      const photoUrl = u?.photo_url || STATE.photo_url || "";
       if (photoUrl) {
         imgEl.src = photoUrl;
-        imgEl.style.display = "block";
-        letterEl.style.display = "none";
+        imgEl.onload = () => {
+          imgEl.style.display = "block";
+          letterEl.style.display = "none";
+        };
         imgEl.onerror = () => {
           imgEl.style.display = "none";
           letterEl.style.display = "block";
@@ -1409,7 +1696,7 @@
     }
 
     // =========================================================================
-    // 4. СОХРАНЕНИЕ ТЕМЫ И ГРАДИЕНТА В LOCALSTORAGE
+    // 5. СОХРАНЕНИЕ ТЕМЫ И ГРАДИЕНТА В LOCALSTORAGE
     // =========================================================================
     function setTheme(theme) {
       localStorage.setItem("ui_theme", theme);
@@ -1453,7 +1740,7 @@
     }
 
     // =========================================================================
-    // 5. КАТАЛОГ МОДЕЛЕЙ (GEMINI, CLAUDE, GROK, DEEPSEEK, CHATGPT)
+    // 6. КАТАЛОГ МОДЕЛЕЙ (GEMINI, CLAUDE, GROK, DEEPSEEK, CHATGPT)
     // =========================================================================
     const MODELS_CATALOG = [
       { id: "gemini-3.1-pro", name: "Gemini 3.1 Pro", short: "Gemini", cat: "gemini", icon: "✨", pro: true, desc: "Мощный мультимодальный анализ" },
@@ -1481,6 +1768,7 @@
     let STATE = {
       user_id: tg?.initDataUnsafe?.user?.id || 0,
       full_name: getUserDisplayName(),
+      photo_url: tg?.initDataUnsafe?.user?.photo_url || "",
       is_admin: false,
       is_pro: false,
       selected_model: localStorage.getItem("selected_model") || "gpt-6-luna",
@@ -1497,7 +1785,7 @@
     };
 
     // =========================================================================
-    // 6. ЛОКАЛЬНАЯ ИСТОРИЯ ЧАТОВ
+    // 7. ЛОКАЛЬНАЯ ИСТОРИЯ ЧАТОВ (СОХРАНЯЕТСЯ В БРАУЗЕРЕ)
     // =========================================================================
     let SESSIONS = JSON.parse(localStorage.getItem("ai_chat_sessions") || "[]");
     let CURRENT_SESSION_ID = null;
@@ -1508,6 +1796,7 @@
     }
 
     function startNewChat() {
+      window.speechSynthesis?.cancel();
       CURRENT_SESSION_ID = null;
       clearAttachment();
       document.getElementById("messagesStack").innerHTML = "";
@@ -1520,6 +1809,7 @@
     }
 
     function openSession(id) {
+      window.speechSynthesis?.cancel();
       const sess = SESSIONS.find(s => s.id === id);
       if (!sess) return;
       CURRENT_SESSION_ID = id;
@@ -1531,8 +1821,8 @@
       stack.style.display = "flex";
       stack.innerHTML = "";
 
-      sess.messages.forEach(m => {
-        renderBubbleDOM(m.role, m.text, m.imgUrl, m.fileName, m.modelName);
+      sess.messages.forEach((m, idx) => {
+        renderBubbleDOM(m.role, m.text, m.imgUrl, m.fileName, m.modelName, idx);
       });
       scrollChatBottom();
       renderHistorySidebar();
@@ -1542,7 +1832,9 @@
       ev.stopPropagation();
       SESSIONS = SESSIONS.filter(s => s.id !== id);
       saveSessions();
-      if (CURRENT_SESSION_ID === id) startNewChat();
+      if (CURRENT_SESSION_ID === id) {
+        startNewChat();
+      }
     }
 
     function clearAllSessions() {
@@ -1567,7 +1859,7 @@
     }
 
     // =========================================================================
-    // 7. ПРИКРЕПЛЕНИЕ ФОТО И ФАЙЛОВ ЧЕРЕЗ КНОПКУ "+"
+    // 8. ПРИКРЕПЛЕНИЕ ФОТО И ФАЙЛОВ ЧЕРЕЗ КНОПКУ "+"
     // =========================================================================
     function togglePlusPopover(ev) {
       ev.stopPropagation();
@@ -1629,7 +1921,7 @@
     }
 
     // =========================================================================
-    // 8. ОТПРАВКА СООБЩЕНИЙ И РАБОТА С API
+    // 9. РЕНДЕР СООБЩЕНИЙ, КНОПКИ ПОД ОТВЕТОМ И ОТПРАВКА В API
     // =========================================================================
     function autoResizeTextarea(el) {
       el.style.height = "auto";
@@ -1643,7 +1935,74 @@
       }
     }
 
-    function renderBubbleDOM(role, text, imgUrl = null, fileName = null, modelName = "") {
+    function createAiActionsBar(getRawTextFn, msgIndex, rowEl) {
+      const bar = document.createElement("div");
+      bar.className = "ai-actions-bar";
+
+      // 1. Скопировать весь ответ (с тактильным откликом Telegram)
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "ai-act-btn";
+      copyBtn.title = "Скопировать ответ";
+      copyBtn.innerHTML = "📋 <span>Копировать</span>";
+      copyBtn.onclick = () => {
+        navigator.clipboard?.writeText(getRawTextFn());
+        triggerHapticSuccess();
+        copyBtn.innerHTML = "✅ <span>Скопировано</span>";
+        setTimeout(() => { copyBtn.innerHTML = "📋 <span>Копировать</span>"; }, 2000);
+      };
+
+      // 2. Перегенерировать ответ
+      const regenBtn = document.createElement("button");
+      regenBtn.className = "ai-act-btn";
+      regenBtn.title = "Сгенерировать заново";
+      regenBtn.innerHTML = "🔄 <span>Заново</span>";
+      regenBtn.onclick = () => {
+        triggerHapticLight();
+        regenerateAt(msgIndex, rowEl);
+      };
+
+      // 3. Озвучить ответ (TTS)
+      const speakBtn = document.createElement("button");
+      speakBtn.className = "ai-act-btn";
+      speakBtn.title = "Озвучить текст";
+      speakBtn.innerHTML = "🔊 <span>Озвучить</span>";
+      speakBtn.onclick = () => {
+        triggerHapticLight();
+        if (!window.speechSynthesis) {
+          showToast("Озвучка не поддерживается устройством");
+          return;
+        }
+        if (speakBtn.classList.contains("speaking")) {
+          window.speechSynthesis.cancel();
+          speakBtn.classList.remove("speaking");
+          speakBtn.innerHTML = "🔊 <span>Озвучить</span>";
+          return;
+        }
+        window.speechSynthesis.cancel();
+        document.querySelectorAll(".ai-act-btn.speaking").forEach(b => {
+          b.classList.remove("speaking");
+          b.innerHTML = "🔊 <span>Озвучить</span>";
+        });
+
+        const cleanText = getRawTextFn().replace(/[#*`$_]/g, "");
+        const utter = new SpeechSynthesisUtterance(cleanText);
+        utter.lang = "ru-RU";
+        utter.onend = () => {
+          speakBtn.classList.remove("speaking");
+          speakBtn.innerHTML = "🔊 <span>Озвучить</span>";
+        };
+        speakBtn.classList.add("speaking");
+        speakBtn.innerHTML = "⏹ <span>Стоп</span>";
+        window.speechSynthesis.speak(utter);
+      };
+
+      bar.appendChild(copyBtn);
+      bar.appendChild(regenBtn);
+      bar.appendChild(speakBtn);
+      return bar;
+    }
+
+    function renderBubbleDOM(role, text, imgUrl = null, fileName = null, modelName = "", msgIndex = -1, isPending = false) {
       const stack = document.getElementById("messagesStack");
       const row = document.createElement("div");
       row.className = "msg-row " + role;
@@ -1671,18 +2030,83 @@
         bubble.appendChild(fBadge);
       }
 
-      const textEl = document.createElement("div");
-      textEl.textContent = text;
-      bubble.appendChild(textEl);
-
+      const contentEl = document.createElement("div");
+      if (role === "ai") {
+        contentEl.className = "md-content";
+        if (isPending) {
+          contentEl.textContent = text;
+        } else {
+          renderRichMarkdownAndMath(contentEl, text);
+        }
+      } else {
+        contentEl.textContent = text;
+      }
+      bubble.appendChild(contentEl);
       row.appendChild(bubble);
+
+      let currentRawText = text;
+      if (role === "ai" && !isPending) {
+        row.appendChild(createAiActionsBar(() => currentRawText, msgIndex, row));
+      }
+
       stack.appendChild(row);
-      return textEl;
+      return {
+        row,
+        contentEl,
+        finalizeAi(finalText, finalIdx) {
+          currentRawText = finalText;
+          renderRichMarkdownAndMath(contentEl, finalText);
+          row.appendChild(createAiActionsBar(() => currentRawText, finalIdx, row));
+        }
+      };
     }
 
     function scrollChatBottom() {
       const area = document.getElementById("chatScrollArea");
       area.scrollTop = area.scrollHeight;
+    }
+
+    async function regenerateAt(aiMsgIndex, rowEl) {
+      const activeSess = SESSIONS.find(s => s.id === CURRENT_SESSION_ID);
+      if (!activeSess || aiMsgIndex <= 0) return;
+
+      // Ищем предыдущее сообщение пользователя
+      let userPrompt = "";
+      for (let i = aiMsgIndex - 1; i >= 0; i--) {
+        if (activeSess.messages[i].role === "user") {
+          userPrompt = activeSess.messages[i].promptSent || activeSess.messages[i].text;
+          break;
+        }
+      }
+      if (!userPrompt) return;
+
+      const modelObj = MODELS_CATALOG.find(m => m.id === STATE.selected_model) || { name: STATE.selected_model };
+      const tagEl = rowEl.querySelector(".msg-model-tag");
+      if (tagEl) tagEl.textContent = "✦ " + modelObj.name;
+
+      const contentEl = rowEl.querySelector(".md-content");
+      const oldActions = rowEl.querySelector(".ai-actions-bar");
+      if (oldActions) oldActions.remove();
+      contentEl.textContent = "Генерирую заново...";
+
+      try {
+        const res = await apiRequest("/api/chat", "POST", {
+          text: userPrompt,
+          image_b64: null,
+          model_id: STATE.selected_model
+        });
+        activeSess.messages[aiMsgIndex] = { role: "ai", text: res.answer, modelName: modelObj.name };
+        saveSessions();
+
+        renderRichMarkdownAndMath(contentEl, res.answer);
+        rowEl.appendChild(createAiActionsBar(() => res.answer, aiMsgIndex, rowEl));
+
+        if (typeof res.daily_left === "number") STATE.daily_left = res.daily_left;
+        if (typeof res.extra_requests === "number") STATE.extra_requests = res.extra_requests;
+        syncUI();
+      } catch (err) {
+        contentEl.textContent = "⚠️ Ошибка: " + err.message;
+      }
     }
 
     async function sendMessage() {
@@ -1714,23 +2138,26 @@
       const userImg = att?.type === "image" ? att.previewUrl : null;
       const userFile = att?.type === "file" ? att.name : null;
 
-      renderBubbleDOM("user", rawText || (userImg ? "Разбери изображение" : "Проанализируй файл"), userImg, userFile);
-      activeSess.messages.push({ role: "user", text: rawText, imgUrl: userImg, fileName: userFile });
-      saveSessions();
-      scrollChatBottom();
-
       let finalPrompt = rawText;
       if (att?.type === "file") {
-        finalPrompt = `${rawText || "Проанализируй содержимое файла:"}
-
---- Файл: ${att.name} ---
-${att.textContent}`;
+        finalPrompt = `${rawText || "Проанализируй содержимое файла:"}\n\n--- Файл: ${att.name} ---\n${att.textContent}`;
       } else if (!finalPrompt && att?.type === "image") {
         finalPrompt = "Подробно разбери и реши то, что изображено на фото.";
       }
 
+      renderBubbleDOM("user", rawText || (userImg ? "Разбери изображение" : "Проанализируй файл"), userImg, userFile);
+      activeSess.messages.push({
+        role: "user",
+        text: rawText,
+        promptSent: finalPrompt,
+        imgUrl: userImg,
+        fileName: userFile
+      });
+      saveSessions();
+      scrollChatBottom();
+
       const modelObj = MODELS_CATALOG.find(m => m.id === STATE.selected_model) || { name: STATE.selected_model };
-      const aiTextNode = renderBubbleDOM("ai", "Думаю...", null, null, modelObj.name);
+      const pendingBubble = renderBubbleDOM("ai", "Думаю...", null, null, modelObj.name, -1, true);
       scrollChatBottom();
 
       try {
@@ -1739,21 +2166,23 @@ ${att.textContent}`;
           image_b64: att?.type === "image" ? att.b64 : null,
           model_id: STATE.selected_model
         });
-        aiTextNode.textContent = res.answer;
+        const newIdx = activeSess.messages.length;
         activeSess.messages.push({ role: "ai", text: res.answer, modelName: modelObj.name });
         saveSessions();
+
+        pendingBubble.finalizeAi(res.answer, newIdx);
 
         if (typeof res.daily_left === "number") STATE.daily_left = res.daily_left;
         if (typeof res.extra_requests === "number") STATE.extra_requests = res.extra_requests;
         syncUI();
       } catch (err) {
-        aiTextNode.textContent = "⚠️ Ошибка: " + err.message;
+        pendingBubble.contentEl.textContent = "⚠️ Ошибка: " + err.message;
       }
       scrollChatBottom();
     }
 
     // =========================================================================
-    // 9. ВЫБОР МОДЕЛЕЙ И НАВИГАЦИЯ
+    // 10. ВЫБОР МОДЕЛЕЙ И НАВИГАЦИЯ
     // =========================================================================
     function openModelSelector() {
       renderModelOptions();
@@ -1834,7 +2263,7 @@ ${att.textContent}`;
     }
 
     // =========================================================================
-    // 10. API, МАГАЗИН, ПРОФИЛЬ И АДМИНКА
+    // 11. API, МАГАЗИН, ПРОФИЛЬ И АДМИНКА
     // =========================================================================
     async function apiRequest(path, method = "GET", body = null) {
       const res = await fetch(API_BASE + path, {
@@ -1859,7 +2288,7 @@ ${att.textContent}`;
       document.getElementById("pillModelShort").textContent = mInfo.short;
       document.getElementById("sideUserName").textContent = name;
       document.getElementById("sideUserPlan").textContent = STATE.is_pro ? "PRO" : "Free";
-      applyTelegramAvatar(STATE.photo_url || null);
+      applyUserProfileAvatar();
 
       const totalAvail = (STATE.daily_left || 0) + (STATE.extra_requests || 0);
       document.getElementById("topQuotaText").textContent = STATE.is_pro ? "👑 PRO" : `⚡ ${totalAvail} запр.`;
@@ -1906,7 +2335,7 @@ ${att.textContent}`;
         closeModal("checkoutModal");
         if (tg?.openInvoice) {
           tg.openInvoice(res.invoice_url, status => {
-            if (status === "paid") { showToast("🎉 Оплачено!"); initApp(); }
+            if (status === "paid") { triggerHapticSuccess(); showToast("🎉 Оплачено!"); initApp(); }
           });
         } else window.open(res.invoice_url, "_blank");
       } catch (e) { showToast("⚠️ " + e.message); }
@@ -1918,6 +2347,7 @@ ${att.textContent}`;
       try {
         await apiRequest("/api/promo", "POST", { code });
         document.getElementById("promoInput").value = "";
+        triggerHapticSuccess();
         showToast("🎉 Промокод активирован!");
         initApp();
       } catch (e) { showToast("⚠️ " + e.message); }
@@ -1925,6 +2355,7 @@ ${att.textContent}`;
 
     function copyRef() {
       navigator.clipboard?.writeText(STATE.ref_link);
+      triggerHapticSuccess();
       showToast("📋 Ссылка скопирована!");
     }
 
@@ -1945,6 +2376,7 @@ ${att.textContent}`;
       try {
         await apiRequest("/api/admin/set-engine", "POST", { engine_model: val });
         document.getElementById("admEngineInp").value = "";
+        triggerHapticSuccess();
         showToast("✅ Движок обновлён");
         loadAdmin();
       } catch (e) { showToast("⚠️ " + e.message); }
@@ -1956,7 +2388,6 @@ ${att.textContent}`;
 
     async function initApp() {
       initSavedAppearance();
-      applyTelegramAvatar();
       document.getElementById("welcomeGreetingText").textContent = getRandomGreeting(getUserDisplayName());
       renderHistorySidebar();
       syncUI();
