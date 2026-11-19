@@ -554,7 +554,7 @@
       <div class="brand-logo">Æ</div>
       <div>
         <div class="brand-title">AetherNeural</div>
-        <div class="brand-sub" id="topEngineBadge">Движок: GPT-6 Luna</div>
+        <div class="brand-sub">Универсальный ИИ-помощник</div>
       </div>
     </div>
     <div class="quota-pill" id="topQuotaPill" onclick="switchTab('shop')">
@@ -600,7 +600,7 @@
     <section id="tab-models" class="tab-view">
       <div class="bento-grid" style="margin-bottom:12px">
         <div class="bento-card span-2 glow-accent">
-          <div class="card-tag" id="engineBannerTag">⚙️ ЕДИНЫЙ ДВИЖОК: GPT-6 LUNA</div>
+          <div class="card-tag" id="engineBannerTag">✨ ВСЕ НЕЙРОСЕТИ В ОДНОМ ОКНЕ</div>
           <div class="card-title">Каталог нейросетей</div>
           <div class="card-desc">Выбери модель для диалога. Базовые модели доступны бесплатно каждый день, PRO-модели открываются по подписке.</div>
         </div>
@@ -895,7 +895,8 @@
     // НАСТРОЙКА URL БЭКЕНДА (Укажи адрес твоего бота на bothost.ru или через ?api=...)
     // =========================================================================
     const urlParams = new URLSearchParams(window.location.search);
-    const API_BASE = (urlParams.get("api") || localStorage.getItem("aether_api_base") || "").replace(/\/$/, "");
+    const DEFAULT_FALLBACK_API = "https://bot-1794663977-3842-danzler11.bothost.tech";
+    const API_BASE = (urlParams.get("api") || localStorage.getItem("aether_api_base") || DEFAULT_FALLBACK_API).replace(/\/$/, "");
     if (urlParams.get("api")) {
       localStorage.setItem("aether_api_base", API_BASE);
     }
@@ -1019,14 +1020,12 @@
       const mInfo = MODELS_CATALOG.find(m => m.id === STATE.selected_model) || { name: STATE.selected_model, icon: "🤖" };
       document.getElementById("activeModelIcon").textContent = mInfo.icon;
       document.getElementById("activeModelName").textContent = mInfo.name;
-      document.getElementById("topEngineBadge").textContent = "Движок: " + STATE.engine_model;
-      document.getElementById("engineBannerTag").textContent = "⚙️ ЕДИНЫЙ ДВИЖОК: " + STATE.engine_model.toUpperCase();
 
       const pill = document.getElementById("topQuotaPill");
       const pillTxt = document.getElementById("topQuotaText");
       if (STATE.is_pro) {
         pill.classList.add("pro");
-        pillTxt.textContent = "👑 PRO Безлимит";
+        pillTxt.textContent = "👑 Безлимит";
       } else {
         pill.classList.remove("pro");
         const totalAvail = STATE.daily_left + STATE.extra_requests;
@@ -1036,7 +1035,7 @@
       // Profile
       document.getElementById("profUserName").textContent = STATE.full_name;
       document.getElementById("profUserId").textContent = "ID: " + (STATE.user_id || "—");
-      document.getElementById("profPlanBadge").textContent = STATE.is_pro ? "👑 ПОДПИСКА PRO АКТИВНА" : "🆓 БЕСПЛАТНЫЙ ПЛАН";
+      document.getElementById("profPlanBadge").textContent = STATE.is_pro ? "👑 ПОДПИСКА АКТИВНА" : "🆓 БЕСПЛАТНЫЙ ПЛАН";
       document.getElementById("profDailyLeft").textContent = STATE.is_pro ? "∞" : `${STATE.daily_left} / ${STATE.daily_total}`;
       document.getElementById("profExtraLeft").textContent = STATE.extra_requests;
       document.getElementById("profRefBalance").textContent = Number(STATE.ref_balance || 0).toFixed(2) + " ₽";
@@ -1091,11 +1090,14 @@
         ? MODELS_CATALOG
         : MODELS_CATALOG.filter(m => m.cat === STATE.current_filter);
 
+      const hasSub = STATE.is_pro || STATE.is_admin;
       grid.innerHTML = list.map(m => {
         const isSelected = m.id === STATE.selected_model;
-        const locked = m.pro && !STATE.is_pro && !STATE.is_admin;
-        const tagClass = m.pro ? "pro" : "free";
-        const tagText = isSelected ? "✅ ВЫБРАНА" : (locked ? "🔒 PRO" : (m.pro ? "👑 PRO" : "🆓 FREE"));
+        const locked = m.pro && !hasSub;
+        const tagClass = isSelected ? "free" : (locked ? "pro" : "free");
+        const tagText = isSelected
+          ? "✅ ВЫБРАНА"
+          : (locked ? "🔒 ПО ПОДПИСКЕ" : (hasSub ? "🔓 РАЗБЛОКИРОВАНА" : "🆓 БЕСПЛАТНО"));
         return `
           <div class="bento-card ${isSelected ? "glow-accent" : ""}" onclick="selectModel('${m.id}', ${m.pro})">
             <div class="card-tag ${tagClass}">${tagText}</div>
@@ -1189,7 +1191,8 @@
           model_id: STATE.selected_model,
         });
         typingEl.remove();
-        appendMessageBubble("ai", res.answer, null, `Движок: ${res.engine_used || STATE.engine_model}`);
+        const curM = MODELS_CATALOG.find(m => m.id === STATE.selected_model);
+        appendMessageBubble("ai", res.answer, null, curM ? curM.name : "");
         if (typeof res.daily_left === "number") STATE.daily_left = res.daily_left;
         if (typeof res.extra_requests === "number") STATE.extra_requests = res.extra_requests;
         renderAllUI();
@@ -1280,37 +1283,58 @@
     }
 
     async function startSbpPayment(orderCode) {
-      closeModal("checkoutModal");
-      showToast("⏳ Создаю счёт СБП...");
+      const btn = document.getElementById("modalPaySbpBtn");
+      const oldTxt = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "⏳ Создаю ссылку СБП...";
       try {
         const res = await apiRequest("/api/shop/create-sbp", "POST", { order_code: orderCode });
+        closeModal("checkoutModal");
+        showToast("💳 Переходим к оплате СБП...");
         if (tg && tg.openLink) {
           tg.openLink(res.pay_url);
         } else {
           window.open(res.pay_url, "_blank");
         }
+        // Автообновление баланса через 15 и 30 секунд после перехода на оплату
+        setTimeout(() => initApp(), 15000);
+        setTimeout(() => initApp(), 30000);
       } catch (e) {
-        showToast("⚠️ " + e.message);
+        showToast("⚠️ Ошибка СБП: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = oldTxt;
       }
     }
 
     async function startStarsPayment(orderCode) {
-      closeModal("checkoutModal");
-      showToast("⏳ Формирую счёт Stars...");
+      const btn = document.getElementById("modalPayStarsBtn");
+      const oldTxt = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "⏳ Открываю счёт Stars...";
       try {
         const res = await apiRequest("/api/shop/create-stars", "POST", { order_code: orderCode });
-        if (tg && tg.openInvoice) {
+        closeModal("checkoutModal");
+        if (tg && typeof tg.openInvoice === "function") {
           tg.openInvoice(res.invoice_url, (status) => {
             if (status === "paid") {
-              showToast("🎉 Оплата Stars прошла успешно!");
+              haptic("heavy");
+              showToast("🎉 Оплата прошла успешно!");
               initApp();
+            } else if (status === "cancelled") {
+              showToast("❌ Оплата отменена");
+            } else if (status === "failed") {
+              showToast("⚠️ Ошибка при оплате Stars");
             }
           });
         } else {
           window.open(res.invoice_url, "_blank");
         }
       } catch (e) {
-        showToast("⚠️ " + e.message);
+        showToast("⚠️ Ошибка Stars: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = oldTxt;
       }
     }
 
@@ -1368,7 +1392,6 @@
         document.getElementById("admStarsTotal").textContent = "Stars: " + res.total_stars + " ⭐";
         STATE.engine_model = res.engine_model;
         document.getElementById("admCurrentEngine").textContent = res.engine_model;
-        document.getElementById("topEngineBadge").textContent = "Движок: " + res.engine_model;
         if (res.global_discount?.active) {
           const exp = new Date(res.global_discount.until * 1000).toLocaleString("ru-RU");
           document.getElementById("admGdiscStatus").textContent = `Активна: -${res.global_discount.percent}% (до ${exp})`;
