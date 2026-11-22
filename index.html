@@ -20,10 +20,10 @@
     ===================================================================== */
     :root {
       --bg-main: #090b10;
-      --bg-sidebar: rgba(16, 19, 27, 0.88);
-      --bg-surface: rgba(26, 30, 42, 0.78);
-      --bg-surface-hover: rgba(37, 43, 59, 0.94);
-      --bg-input: rgba(23, 27, 38, 0.82);
+      --bg-sidebar: rgba(16, 19, 27, 0.94);
+      --bg-surface: rgba(26, 30, 42, 0.8);
+      --bg-surface-hover: rgba(37, 43, 59, 0.95);
+      --bg-input: rgba(23, 27, 38, 0.85);
       --border: rgba(255, 255, 255, 0.08);
       --border-strong: rgba(255, 255, 255, 0.14);
       --text-main: #f3f5fa;
@@ -44,10 +44,10 @@
 
     body.theme-light {
       --bg-main: #f7f9fe;
-      --bg-sidebar: rgba(240, 244, 252, 0.9);
-      --bg-surface: rgba(231, 236, 248, 0.8);
-      --bg-surface-hover: rgba(220, 227, 243, 0.95);
-      --bg-input: rgba(255, 255, 255, 0.9);
+      --bg-sidebar: rgba(240, 244, 252, 0.95);
+      --bg-surface: rgba(231, 236, 248, 0.84);
+      --bg-surface-hover: rgba(220, 227, 243, 0.96);
+      --bg-input: rgba(255, 255, 255, 0.92);
       --border: rgba(15, 23, 42, 0.08);
       --border-strong: rgba(15, 23, 42, 0.15);
       --text-main: #0f172a;
@@ -88,6 +88,114 @@
       stroke-linejoin: round;
       fill: none;
       flex-shrink: 0;
+    }
+
+    /* =====================================================================
+       ЭКРАН АВТОРИЗАЦИИ ДЛЯ БРАУЗЕРА (GOOGLE / CHROME / SAFARI)
+    ===================================================================== */
+    .web-auth-gate {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-main);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .web-auth-gate.active {
+      display: flex;
+    }
+
+    .web-auth-card {
+      width: 100%;
+      max-width: 410px;
+      background: var(--bg-sidebar);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border-strong);
+      border-radius: 28px;
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: var(--shadow-modal);
+      animation: springPop 0.32s cubic-bezier(0.22, 1.25, 0.36, 1);
+    }
+
+    .auth-logo-circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 18px;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4);
+    }
+
+    .auth-logo-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .auth-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .auth-desc {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .tg-login-btn {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: 13px 18px;
+      font-size: 14.5px;
+      font-weight: 650;
+      color: #fff;
+      background: linear-gradient(135deg, #24A1DE, #1d8ec4);
+      box-shadow: 0 8px 22px rgba(36, 161, 222, 0.35);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      text-decoration: none;
+      transition: transform 0.15s;
+    }
+
+    .tg-login-btn:active {
+      transform: scale(0.97);
+    }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 18px 0 14px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .auth-divider::before, .auth-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border-strong);
+    }
+
+    .auth-id-row {
+      display: flex;
+      gap: 8px;
     }
 
     /* =====================================================================
@@ -135,7 +243,7 @@
       overflow: hidden;
     }
 
-    /* ЛЕВАЯ ПАНЕЛЬ (МАТОВОЕ СТЕКЛО + РЕЖИМ COLLAPSED НА ПК) */
+    /* ЛЕВАЯ ПАНЕЛЬ (САЙДБАР — ВЫНЕСЕН ПОВЕРХ ВСЕХ СЛОЁВ НА МОБИЛЬНЫХ) */
     .sidebar {
       width: 276px;
       background: var(--bg-sidebar);
@@ -146,7 +254,7 @@
       flex-direction: column;
       padding: 14px 12px;
       flex-shrink: 0;
-      z-index: 50;
+      z-index: 80;
       transition: width 0.28s cubic-bezier(0.22, 1, 0.36, 1), transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.25s ease;
     }
 
@@ -352,7 +460,7 @@
     }
 
     .history-del {
-      opacity: 0;
+      opacity: 0.55;
       color: var(--text-muted);
       padding: 2px 4px;
       border-radius: 6px;
@@ -494,7 +602,7 @@
     }
 
     /* =====================================================================
-       ПРАВАЯ РАБОЧАЯ ЗОНА (С ЖЁСТКИМ ОГРАНИЧЕНИЕМ ШИРИНЫ ПРОТИВ БАГА С КОДОМ!)
+       ПРАВАЯ РАБОЧАЯ ЗОНА
     ===================================================================== */
     .main-stage {
       flex: 1;
@@ -629,7 +737,6 @@
       scroll-behavior: smooth;
     }
 
-    /* Жёсткий фикс ширины контейнера, чтобы длинный код не сжимал экран */
     .chat-container-inner {
       width: 100%;
       max-width: 780px;
@@ -651,7 +758,6 @@
       animation: springPop 0.45s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    /* ЛОГОТИП С БЕГУЩИМ БЛИКОМ И СВЕЧЕНИЕМ ПОД ВЫБРАННУЮ НЕЙРОСЕТЬ */
     .welcome-logo-wrap {
       position: relative;
       width: 58px;
@@ -690,7 +796,6 @@
       object-fit: cover;
     }
 
-    /* ПЛАВНЫЙ ГРАДИЕНТНЫЙ ЗАГОЛОВОК ПРИВЕТСТВИЯ (КАК В GEMINI ADVANCED) */
     .welcome-title {
       font-size: clamp(25px, 4vw, 36px);
       font-weight: 600;
@@ -754,9 +859,7 @@
       transform: translateY(-2px);
     }
 
-    .prompt-chip-card:active {
-      transform: scale(0.96);
-    }
+    .prompt-chip-card:active { transform: scale(0.96); }
 
     .chip-ico-wrap {
       width: 32px;
@@ -903,7 +1006,7 @@
       100% { background-position: -200% 0; }
     }
 
-    /* СТИЛИ MARKDOWN (С ЗАЩИТОЙ ОТ РАСТЯГИВАНИЯ ЭКРАНА) */
+    /* СТИЛИ MARKDOWN */
     .md-content {
       width: 100%;
       min-width: 0;
@@ -949,7 +1052,7 @@
       word-break: break-all;
     }
 
-    /* БЛОК КОДА: НЕ СУЖАЕТ ЭКРАН, КРАСИВЫЙ ГОРИЗОНТАЛЬНЫЙ СКРОЛЛ ВНУТРИ */
+    /* БЛОК КОДА */
     .code-block-wrapper {
       margin: 12px 0;
       border-radius: 14px;
@@ -1082,9 +1185,7 @@
       pointer-events: auto;
     }
 
-    .scroll-bottom-fab:hover {
-      background: var(--bg-surface-hover);
-    }
+    .scroll-bottom-fab:hover { background: var(--bg-surface-hover); }
 
     /* =====================================================================
        НИЖНЯЯ КАПСУЛА ВВОДА + ВИЗУАЛЬНЫЕ КАРТОЧКИ ПРИКРЕПЛЁННЫХ ФАЙЛОВ/ФОТО
@@ -1098,7 +1199,6 @@
       flex-shrink: 0;
     }
 
-    /* Визуальная карточка-превью прикреплённого фото или файла */
     .attachment-preview-tray {
       display: none;
       align-items: center;
@@ -1118,12 +1218,7 @@
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }
 
-    .att-image-card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    .att-image-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
     .att-file-card {
       position: relative;
@@ -1149,23 +1244,9 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     }
 
-    .att-file-meta {
-      min-width: 0;
-    }
-
-    .att-file-name {
-      font-size: 13px;
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .att-file-size {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 1px;
-    }
+    .att-file-meta { min-width: 0; }
+    .att-file-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .att-file-size { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
 
     .att-remove-badge {
       position: absolute;
@@ -1302,7 +1383,7 @@
     .popover-item:hover { background: var(--bg-surface-hover); }
 
     /* =====================================================================
-       ВЫПАДАЮЩЕЕ МЕНЮ ВЫБОРА МОДЕЛИ (С ПРУЖИНИСТОЙ АНИМАЦИЕЙ)
+       ВЫПАДАЮЩЕЕ МЕНЮ ВЫБОРА МОДЕЛИ
     ===================================================================== */
     .model-menu-backdrop {
       position: fixed;
@@ -1314,7 +1395,7 @@
       align-items: flex-start;
       justify-content: center;
       padding-top: 64px;
-      z-index: 70;
+      z-index: 90;
     }
 
     .model-menu-backdrop.open { display: flex; }
@@ -1481,7 +1562,7 @@
       align-items: center;
       justify-content: center;
       padding: 16px;
-      z-index: 90;
+      z-index: 100;
     }
     .modal-overlay.open { display: flex; }
 
@@ -1538,21 +1619,22 @@
       border-radius: 999px;
       font-size: 13px;
       font-weight: 600;
-      z-index: 120;
+      z-index: 150;
       display: none;
       box-shadow: var(--shadow-modal);
     }
 
+    /* ЗАТЕМНЕНИЕ ПОД ШТОРКОЙ (СТРОГО НИЖЕ .sidebar, ЧТОБЫ НЕ ЗАТЕМНЯТЬ САМУ ШТОРКУ!) */
     .mobile-backdrop {
       display: none;
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.55);
-      z-index: 45;
+      z-index: 70;
     }
 
     /* =====================================================================
-       МОБИЛЬНАЯ АДАПТАЦИЯ (< 768px) — ОТСТУП ПОД КНОПКИ TELEGRAM СВЕРХУ
+       МОБИЛЬНАЯ АДАПТАЦИЯ (< 768px)
     ===================================================================== */
     @media (max-width: 768px) {
       .app-shell {
@@ -1579,6 +1661,7 @@
         left: 0;
         width: 82%;
         max-width: 310px;
+        z-index: 80;
         transform: translateX(-100%);
         padding-top: max(50px, calc(var(--safe-top) + var(--tg-content-top) + 42px));
         padding-bottom: calc(16px + var(--safe-bottom));
@@ -1597,8 +1680,37 @@
 </head>
 <body>
 
+  <!-- ==================== ЭКРАН ВХОДА ДЛЯ ОБЫЧНОГО БРАУЗЕРА (GOOGLE / CHROME) ==================== -->
+  <div id="webAuthGate" class="web-auth-gate">
+    <div class="web-auth-card">
+      <div class="auth-logo-circle">
+        <img id="authLogoImg" src="./logo.png" alt="Aether AI" onerror="this.style.display='none';this.parentNode.innerHTML='<span style=\'color:#fff;font-weight:800;font-size:24px\'>Æ</span>'" />
+      </div>
+      <div class="auth-title">Вход в Aether AI</div>
+      <div class="auth-desc">
+        Ты открыл приложение в браузере. Чтобы синхронизировать лимиты, подписку PRO и историю, авторизуйся через Telegram.
+      </div>
+
+      <a id="tgBotLoginLink" href="https://t.me/AetherNeural_bot?start=web_auth" target="_blank" class="tg-login-btn">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        <span>Открыть и войти через Telegram</span>
+      </a>
+
+      <div class="auth-divider">или введи свой Telegram ID</div>
+
+      <div class="auth-id-row">
+        <input type="number" id="webAuthIdInput" class="std-input" placeholder="Например: 123456789" onkeydown="if(event.key==='Enter') submitWebIdAuth()" />
+        <button class="btn-primary" style="white-space:nowrap" onclick="submitWebIdAuth()">Войти</button>
+      </div>
+      <div style="font-size:11.5px;color:var(--text-muted);margin-top:10px">
+        Узнать свой ID можно в боте командой <b>/id</b> или в профиле.
+      </div>
+    </div>
+  </div>
+
   <div class="ambient-glow"></div>
   <div id="toast" class="toast-box"></div>
+  <!-- Затемнение вынесено НАРУЖУ из .app-shell, чтобы на мобильном не накрывать .sidebar -->
   <div id="mobileBackdrop" class="mobile-backdrop" onclick="toggleSidebar(false)"></div>
 
   <div class="app-shell">
@@ -1610,7 +1722,6 @@
           <div id="sideLogoFallback" class="brand-logo-fallback" style="display:none">Æ</div>
           <span class="brand-name" id="brandTitleText">Aether AI</span>
         </div>
-        <!-- Иконка сворачивания сайдбара на ПК (◧) -->
         <button class="collapse-pc-btn" title="Свернуть/развернуть меню" onclick="toggleCollapseSidebar()">
           <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
         </button>
@@ -1776,7 +1887,6 @@
             </div>
           </div>
 
-          <!-- ВИЗУАЛЬНАЯ КАРТОЧКА ПРИКРЕПЛЁННОГО ФОТО / ФАЙЛА -->
           <div id="attachmentPreviewTray" class="attachment-preview-tray"></div>
 
           <input type="file" id="universalFileInput" style="display:none" onchange="handleFilePicked(event)" />
@@ -1847,9 +1957,14 @@
           <div class="subpage-inner">
             <div class="bento-grid">
               <div class="bento-card span-2">
-                <div class="card-tag" id="profBadge">БЕСПЛАТНЫЙ ПЛАН</div>
-                <div class="card-title" id="profFullName">Пользователь</div>
-                <div class="card-desc" id="profTgId">ID: —</div>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+                  <div>
+                    <div class="card-tag" id="profBadge">БЕСПЛАТНЫЙ ПЛАН</div>
+                    <div class="card-title" id="profFullName">Пользователь</div>
+                    <div class="card-desc" id="profTgId">ID: —</div>
+                  </div>
+                  <button id="webLogoutBtn" class="btn-secondary" style="display:none;padding:7px 12px;font-size:12px" onclick="logoutWebSession()">Выйти</button>
+                </div>
               </div>
 
               <div class="bento-card">
@@ -1982,6 +2097,7 @@
     // =========================================================================
     const CUSTOM_LOGO_URL = "./logo.png";
     const APP_BRAND_NAME = "Aether AI";
+    const BOT_USERNAME = "AetherNeural_bot";
 
     const PROVIDER_AVATARS = {
       gemini: {
@@ -2047,17 +2163,68 @@
     if (urlParams.get("api")) localStorage.setItem("aether_api_base", API_BASE);
 
     // =========================================================================
-    // 2. TELEGRAM WEBAPP & HAPTIC FEEDBACK
+    // 2. TELEGRAM WEBAPP & АВТОРИЗАЦИЯ ДЛЯ ОБЫЧНОГО БРАУЗЕРА (GOOGLE / WEB)
     // =========================================================================
     const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    const isInsideTelegram = Boolean(tg && tg.initData && tg.initData.length > 0 && tg.initDataUnsafe?.user?.id);
+
     if (tg) {
       tg.ready();
       tg.expand();
       const platform = (tg.platform || "").toLowerCase();
-      const isMobileTg = platform === "android" || platform === "ios" || window.innerWidth <= 768;
+      const isMobileTg = (platform === "android" || platform === "ios") && isInsideTelegram;
       if (isMobileTg && typeof tg.requestFullscreen === "function") {
         try { tg.requestFullscreen(); } catch (e) {}
       }
+    }
+
+    function checkWebBrowserAuth() {
+      // Если открыто внутри Telegram — авторизация уже есть
+      if (isInsideTelegram) {
+        document.getElementById("webAuthGate").classList.remove("active");
+        return true;
+      }
+
+      // Проверяем ?uid=... в ссылке (если бот дал прямую ссылку для браузера) или сохранённый ID
+      const paramUid = urlParams.get("uid") || urlParams.get("user_id");
+      if (paramUid && Number(paramUid) > 0) {
+        localStorage.setItem("aether_web_uid", String(Number(paramUid)));
+      }
+
+      const savedWebUid = Number(localStorage.getItem("aether_web_uid") || "0");
+      if (savedWebUid > 0) {
+        STATE.user_id = savedWebUid;
+        document.getElementById("webAuthGate").classList.remove("active");
+        document.getElementById("webLogoutBtn").style.display = "inline-flex";
+        return true;
+      }
+
+      // Показываем экран авторизации через Telegram для гостей из браузера
+      document.getElementById("tgBotLoginLink").href = `https://t.me/${BOT_USERNAME}?start=web_auth`;
+      document.getElementById("webAuthGate").classList.add("active");
+      return false;
+    }
+
+    async function submitWebIdAuth() {
+      const inp = document.getElementById("webAuthIdInput");
+      const uid = Number((inp.value || "").trim());
+      if (!uid || uid < 1000) {
+        showToast("Введи корректный числовой Telegram ID");
+        return;
+      }
+      localStorage.setItem("aether_web_uid", String(uid));
+      STATE.user_id = uid;
+      document.getElementById("webAuthGate").classList.remove("active");
+      document.getElementById("webLogoutBtn").style.display = "inline-flex";
+      triggerHapticSuccess();
+      showToast("Вход выполнен");
+      await initApp();
+    }
+
+    function logoutWebSession() {
+      localStorage.removeItem("aether_web_uid");
+      STATE.user_id = 0;
+      checkWebBrowserAuth();
     }
 
     function triggerHapticSuccess() {
@@ -2172,10 +2339,10 @@
     // =========================================================================
     function getUserDisplayName() {
       const u = tg?.initDataUnsafe?.user;
-      if (!u) return "Даниил";
-      if (u.first_name && u.first_name.trim()) return u.first_name.trim();
-      if (u.username && u.username.trim()) return "@" + u.username.trim();
-      return "Друг";
+      if (u?.first_name && u.first_name.trim()) return u.first_name.trim();
+      if (u?.username && u.username.trim()) return "@" + u.username.trim();
+      if (STATE.full_name && STATE.full_name !== "Пользователь") return STATE.full_name;
+      return "Даниил";
     }
 
     function applyUserProfileAvatar() {
@@ -2322,8 +2489,8 @@
     };
 
     let STATE = {
-      user_id: tg?.initDataUnsafe?.user?.id || 0,
-      full_name: getUserDisplayName(),
+      user_id: tg?.initDataUnsafe?.user?.id || Number(localStorage.getItem("aether_web_uid") || "0"),
+      full_name: "Пользователь",
       photo_url: tg?.initDataUnsafe?.user?.photo_url || "",
       is_admin: false,
       is_pro: false,
@@ -2340,14 +2507,40 @@
     };
 
     // =========================================================================
-    // 7. ЛОКАЛЬНАЯ ИСТОРИЯ ЧАТОВ И УПРАВЛЕНИЕ СКРОЛЛОМ
+    // 7. ЛОКАЛЬНАЯ ИСТОРИЯ ЧАТОВ (БЕЗОПАСНОЕ СОХРАНЕНИЕ БЕЗ ПЕРЕПОЛНЕНИЯ КВОТЫ)
     // =========================================================================
-    let SESSIONS = JSON.parse(localStorage.getItem("ai_chat_sessions") || "[]");
+    let SESSIONS = [];
+    try {
+      SESSIONS = JSON.parse(localStorage.getItem("ai_chat_sessions") || "[]");
+      if (!Array.isArray(SESSIONS)) SESSIONS = [];
+    } catch (e) {
+      SESSIONS = [];
+    }
+
     let CURRENT_SESSION_ID = null;
     let ACTIVE_STREAM_TIMER = null;
 
     function saveSessions() {
-      localStorage.setItem("ai_chat_sessions", JSON.stringify(SESSIONS.slice(0, 40)));
+      try {
+        // Не сохраняем тяжёлые base64-картинки в localStorage, чтобы не превысить лимит 5 МБ на телефоне
+        const lightweight = SESSIONS.slice(0, 35).map(s => ({
+          id: s.id,
+          title: s.title,
+          messages: (s.messages || []).map(m => ({
+            role: m.role,
+            text: m.text,
+            fileName: m.fileName || (m.imgUrl ? "Фото" : null),
+            modelName: m.modelName,
+            modelCat: m.modelCat
+          }))
+        }));
+        localStorage.setItem("ai_chat_sessions", JSON.stringify(lightweight));
+      } catch (e) {
+        // Если память всё же забита — оставляем последние 10 диалогов
+        try {
+          localStorage.setItem("ai_chat_sessions", JSON.stringify(SESSIONS.slice(0, 10)));
+        } catch (e2) {}
+      }
       renderHistorySidebar();
     }
 
@@ -2403,7 +2596,7 @@
       stack.style.display = "flex";
       stack.innerHTML = "";
 
-      sess.messages.forEach(m => {
+      (sess.messages || []).forEach(m => {
         renderBubbleDOM(m.role, m.text, m.imgUrl, m.fileName, m.modelName, m.modelCat);
       });
       scrollChatBottom();
@@ -2777,7 +2970,7 @@
     }
 
     // =========================================================================
-    // 10. ВЫБОР МОДЕЛЕЙ (С МИКРО-ВИБРАЦИЕЙ И СВЕЧЕНИЕМ ЛОГО) И НАВИГАЦИЯ
+    // 10. ВЫБОР МОДЕЛЕЙ И НАВИГАЦИЯ (ФИКС СВОРАЧИВАНИЯ ШТОРКИ НА ТЕЛЕФОНЕ)
     // =========================================================================
     function openModelSelector() {
       triggerHapticLight();
@@ -2853,8 +3046,18 @@
     }
 
     function toggleSidebar(open) {
-      document.getElementById("sidebar").classList.toggle("open", open);
-      document.getElementById("mobileBackdrop").classList.toggle("open", open);
+      const sb = document.getElementById("sidebar");
+      const bd = document.getElementById("mobileBackdrop");
+      if (open) {
+        // На телефоне гарантированно снимаем класс collapsed, чтобы текст и история не прятались
+        sb.classList.remove("collapsed");
+        renderHistorySidebar();
+        sb.classList.add("open");
+        bd.classList.add("open");
+      } else {
+        sb.classList.remove("open");
+        bd.classList.remove("open");
+      }
     }
 
     function openModal(id) { document.getElementById(id).classList.add("open"); }
@@ -2891,7 +3094,6 @@
       const mInfo = MODELS_CATALOG.find(m => m.id === STATE.selected_model) || { name: STATE.selected_model, short: "AI", cat: "gpt" };
       const providerCfg = PROVIDER_AVATARS[mInfo.cat] || PROVIDER_AVATARS.gpt;
 
-      // Меняем цвет свечения вокруг центрального логотипа под выбранную нейросеть
       document.documentElement.style.setProperty("--provider-glow", providerCfg.glow);
 
       document.getElementById("topModelName").textContent = mInfo.name;
@@ -2998,12 +3200,15 @@
 
     async function initApp() {
       initSavedAppearance();
+      if (!checkWebBrowserAuth()) return;
+
       document.getElementById("welcomeGreetingText").textContent = getRandomGreeting(getUserDisplayName());
       renderHistorySidebar();
       syncUI();
       try {
         const me = await apiRequest("/api/me");
         STATE = { ...STATE, ...me };
+        document.getElementById("welcomeGreetingText").textContent = getRandomGreeting(getUserDisplayName());
         syncUI();
       } catch (e) {}
     }
