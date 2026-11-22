@@ -20,10 +20,11 @@
     ===================================================================== */
     :root {
       --bg-main: #090b10;
-      --bg-sidebar: rgba(16, 19, 27, 0.94);
-      --bg-surface: rgba(26, 30, 42, 0.8);
-      --bg-surface-hover: rgba(37, 43, 59, 0.95);
-      --bg-input: rgba(23, 27, 38, 0.85);
+      --bg-sidebar: #11141d;
+      --bg-sidebar-glass: rgba(17, 20, 29, 0.96);
+      --bg-surface: rgba(26, 30, 42, 0.85);
+      --bg-surface-hover: rgba(37, 43, 59, 0.96);
+      --bg-input: rgba(23, 27, 38, 0.9);
       --border: rgba(255, 255, 255, 0.08);
       --border-strong: rgba(255, 255, 255, 0.14);
       --text-main: #f3f5fa;
@@ -31,7 +32,7 @@
       --accent: #6366f1;
       --accent-2: #8b5cf6;
       --accent-soft: rgba(99, 102, 241, 0.18);
-      --pill-active: rgba(99, 102, 241, 0.17);
+      --pill-active: rgba(99, 102, 241, 0.18);
       --shadow-modal: 0 24px 60px rgba(0, 0, 0, 0.68);
       --code-bg: #12151f;
       --code-header-bg: #1a1e2c;
@@ -44,10 +45,11 @@
 
     body.theme-light {
       --bg-main: #f7f9fe;
-      --bg-sidebar: rgba(240, 244, 252, 0.95);
-      --bg-surface: rgba(231, 236, 248, 0.84);
-      --bg-surface-hover: rgba(220, 227, 243, 0.96);
-      --bg-input: rgba(255, 255, 255, 0.92);
+      --bg-sidebar: #f0f4fc;
+      --bg-sidebar-glass: rgba(240, 244, 252, 0.97);
+      --bg-surface: rgba(231, 236, 248, 0.88);
+      --bg-surface-hover: rgba(220, 227, 243, 0.98);
+      --bg-input: rgba(255, 255, 255, 0.95);
       --border: rgba(15, 23, 42, 0.08);
       --border-strong: rgba(15, 23, 42, 0.15);
       --text-main: #0f172a;
@@ -55,7 +57,7 @@
       --accent: #4f46e5;
       --accent-2: #7c3aed;
       --accent-soft: rgba(79, 70, 229, 0.11);
-      --pill-active: rgba(79, 70, 229, 0.13);
+      --pill-active: rgba(79, 70, 229, 0.14);
       --shadow-modal: 0 20px 50px rgba(15, 23, 42, 0.14);
       --code-bg: #f4f6fb;
       --code-header-bg: #e8ecf6;
@@ -91,13 +93,13 @@
     }
 
     /* =====================================================================
-       ЭКРАН АВТОРИЗАЦИИ ДЛЯ БРАУЗЕРА (GOOGLE / CHROME / SAFARI)
+       ЗАЩИЩЁННАЯ АВТОРИЗАЦИЯ ДЛЯ БРАУЗЕРА (GOOGLE / CHROME / SAFARI)
     ===================================================================== */
     .web-auth-gate {
       position: fixed;
       inset: 0;
       background: var(--bg-main);
-      z-index: 200;
+      z-index: 300;
       display: none;
       align-items: center;
       justify-content: center;
@@ -112,8 +114,6 @@
       width: 100%;
       max-width: 410px;
       background: var(--bg-sidebar);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
       border: 1px solid var(--border-strong);
       border-radius: 28px;
       padding: 28px 24px;
@@ -151,7 +151,7 @@
       font-size: 13.5px;
       color: var(--text-muted);
       line-height: 1.5;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .tg-login-btn {
@@ -177,11 +177,18 @@
       transform: scale(0.97);
     }
 
+    .auth-widget-slot {
+      display: flex;
+      justify-content: center;
+      margin: 12px 0 4px;
+      min-height: 42px;
+    }
+
     .auth-divider {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin: 18px 0 14px;
+      margin: 16px 0 12px;
       font-size: 11.5px;
       color: var(--text-muted);
     }
@@ -193,7 +200,7 @@
       background: var(--border-strong);
     }
 
-    .auth-id-row {
+    .auth-code-row {
       display: flex;
       gap: 8px;
     }
@@ -230,7 +237,7 @@
     }
 
     /* =====================================================================
-       ОСНОВНОЙ КАРКАС (НА ПК СТРОГО ПО ВЕРХУ, СВОРАЧИВАЕМЫЙ САЙДБАР)
+       ОСНОВНОЙ КАРКАС (ПК + МОБИЛЬНЫЙ)
     ===================================================================== */
     .app-shell {
       display: flex;
@@ -243,10 +250,10 @@
       overflow: hidden;
     }
 
-    /* ЛЕВАЯ ПАНЕЛЬ (САЙДБАР — ВЫНЕСЕН ПОВЕРХ ВСЕХ СЛОЁВ НА МОБИЛЬНЫХ) */
+    /* ЛЕВАЯ ПАНЕЛЬ (САЙДБАР) */
     .sidebar {
       width: 276px;
-      background: var(--bg-sidebar);
+      background: var(--bg-sidebar-glass);
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border-right: 1px solid var(--border);
@@ -254,7 +261,7 @@
       flex-direction: column;
       padding: 14px 12px;
       flex-shrink: 0;
-      z-index: 80;
+      z-index: 50;
       transition: width 0.28s cubic-bezier(0.22, 1, 0.36, 1), transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.25s ease;
     }
 
@@ -690,6 +697,31 @@
       height: 100%;
       object-fit: cover;
       display: block;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .fullscreen-pc-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .fullscreen-pc-btn:hover {
+      background: var(--bg-surface-hover);
+      color: var(--text-main);
+      border-color: var(--border-strong);
     }
 
     .quota-badge {
@@ -1395,7 +1427,7 @@
       align-items: flex-start;
       justify-content: center;
       padding-top: 64px;
-      z-index: 90;
+      z-index: 150;
     }
 
     .model-menu-backdrop.open { display: flex; }
@@ -1406,8 +1438,6 @@
       max-height: 76vh;
       overflow-y: auto;
       background: var(--bg-sidebar);
-      backdrop-filter: blur(26px);
-      -webkit-backdrop-filter: blur(26px);
       border: 1px solid var(--border-strong);
       border-radius: 24px;
       padding: 12px;
@@ -1492,8 +1522,6 @@
     .bento-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .bento-card {
       background: var(--bg-sidebar);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 16px;
@@ -1562,7 +1590,7 @@
       align-items: center;
       justify-content: center;
       padding: 16px;
-      z-index: 100;
+      z-index: 200;
     }
     .modal-overlay.open { display: flex; }
 
@@ -1570,7 +1598,6 @@
       width: 100%;
       max-width: 420px;
       background: var(--bg-sidebar);
-      backdrop-filter: blur(24px);
       border: 1px solid var(--border-strong);
       border-radius: 24px;
       padding: 20px;
@@ -1619,18 +1646,18 @@
       border-radius: 999px;
       font-size: 13px;
       font-weight: 600;
-      z-index: 150;
+      z-index: 350;
       display: none;
       box-shadow: var(--shadow-modal);
     }
 
-    /* ЗАТЕМНЕНИЕ ПОД ШТОРКОЙ (СТРОГО НИЖЕ .sidebar, ЧТОБЫ НЕ ЗАТЕМНЯТЬ САМУ ШТОРКУ!) */
+    /* МОБИЛЬНАЯ ШТОРКА И ПОДЛОЖКА (ВЫНЕСЕНЫ НА ОДИН УРОВЕНЬ С БОДИ, БЕЗ КОНФЛИКТА STACKING CONTEXT) */
     .mobile-backdrop {
       display: none;
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.55);
-      z-index: 70;
+      z-index: 90;
     }
 
     /* =====================================================================
@@ -1661,16 +1688,20 @@
         left: 0;
         width: 82%;
         max-width: 310px;
-        z-index: 80;
-        transform: translateX(-100%);
+        background: var(--bg-sidebar);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        z-index: 120;
+        transform: translateX(-105%);
         padding-top: max(50px, calc(var(--safe-top) + var(--tg-content-top) + 42px));
         padding-bottom: calc(16px + var(--safe-bottom));
+        box-shadow: 12px 0 40px rgba(0, 0, 0, 0.55);
       }
 
       .sidebar.open { transform: translateX(0); }
       .mobile-backdrop.open { display: block; }
       .close-sidebar-btn, .hamburger-btn { display: inline-flex; }
-      .collapse-pc-btn { display: none; }
+      .collapse-pc-btn, .fullscreen-pc-btn { display: none; }
       .composer-model-pill { display: none; }
       .msg-row.user { max-width: 90%; }
       .prompt-chips-grid { grid-template-columns: 1fr; }
@@ -1680,7 +1711,7 @@
 </head>
 <body>
 
-  <!-- ==================== ЭКРАН ВХОДА ДЛЯ ОБЫЧНОГО БРАУЗЕРА (GOOGLE / CHROME) ==================== -->
+  <!-- ==================== ЗАЩИЩЁННАЯ АВТОРИЗАЦИЯ ДЛЯ БРАУЗЕРА ==================== -->
   <div id="webAuthGate" class="web-auth-gate">
     <div class="web-auth-card">
       <div class="auth-logo-circle">
@@ -1688,106 +1719,108 @@
       </div>
       <div class="auth-title">Вход в Aether AI</div>
       <div class="auth-desc">
-        Ты открыл приложение в браузере. Чтобы синхронизировать лимиты, подписку PRO и историю, авторизуйся через Telegram.
+        Чтобы защитить твои чаты, подписку PRO и баланс, вход из браузера выполняется только с подтверждением через Telegram.
       </div>
+
+      <!-- Официальный Telegram Login Widget (подгружается автоматически, если указан BOT_USERNAME) -->
+      <div id="tgLoginWidgetContainer" class="auth-widget-slot"></div>
 
       <a id="tgBotLoginLink" href="https://t.me/AetherNeural_bot?start=web_auth" target="_blank" class="tg-login-btn">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
-        <span>Открыть и войти через Telegram</span>
+        <span>Получить одноразовый код в Telegram</span>
       </a>
 
-      <div class="auth-divider">или введи свой Telegram ID</div>
+      <div class="auth-divider">или введи одноразовый код из бота</div>
 
-      <div class="auth-id-row">
-        <input type="number" id="webAuthIdInput" class="std-input" placeholder="Например: 123456789" onkeydown="if(event.key==='Enter') submitWebIdAuth()" />
-        <button class="btn-primary" style="white-space:nowrap" onclick="submitWebIdAuth()">Войти</button>
+      <div class="auth-code-row">
+        <input type="text" id="webAuthCodeInput" class="std-input" placeholder="Код из бота (например: AE-84920)" style="text-transform:uppercase" onkeydown="if(event.key==='Enter') submitWebOneTimeCode()" />
+        <button class="btn-primary" id="webAuthCodeBtn" style="white-space:nowrap" onclick="submitWebOneTimeCode()">Войти</button>
       </div>
       <div style="font-size:11.5px;color:var(--text-muted);margin-top:10px">
-        Узнать свой ID можно в боте командой <b>/id</b> или в профиле.
+        Вход по чужому ID без подтверждения в Telegram заблокирован в целях безопасности.
       </div>
     </div>
   </div>
 
   <div class="ambient-glow"></div>
   <div id="toast" class="toast-box"></div>
-  <!-- Затемнение вынесено НАРУЖУ из .app-shell, чтобы на мобильном не накрывать .sidebar -->
   <div id="mobileBackdrop" class="mobile-backdrop" onclick="toggleSidebar(false)"></div>
 
-  <div class="app-shell">
-    <!-- ==================== ЛЕВАЯ БОКОВАЯ ПАНЕЛЬ ==================== -->
-    <aside id="sidebar" class="sidebar">
-      <div class="sidebar-header">
-        <div class="brand-box" onclick="startNewChat()">
-          <img id="sideLogoImg" class="brand-logo-img" alt="Logo" />
-          <div id="sideLogoFallback" class="brand-logo-fallback" style="display:none">Æ</div>
-          <span class="brand-name" id="brandTitleText">Aether AI</span>
-        </div>
-        <button class="collapse-pc-btn" title="Свернуть/развернуть меню" onclick="toggleCollapseSidebar()">
-          <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-        </button>
-        <button class="close-sidebar-btn" onclick="toggleSidebar(false)">
-          <svg class="ico" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
-        </button>
+  <!-- МОБИЛЬНЫЙ САЙДБАР ВЫНЕСЕН НА ВЕРХНИЙ УРОВЕНЬ DOM, ЧТОБЫ НИЧТО ЕГО НЕ ПЕРЕКРЫВАЛО -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-box" onclick="startNewChat()">
+        <img id="sideLogoImg" class="brand-logo-img" alt="Logo" />
+        <div id="sideLogoFallback" class="brand-logo-fallback" style="display:none">Æ</div>
+        <span class="brand-name" id="brandTitleText">Aether AI</span>
       </div>
-
-      <button class="new-chat-btn" onclick="startNewChat()">
-        <svg class="ico" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-        <span>Новый чат</span>
+      <button class="collapse-pc-btn" title="Свернуть/развернуть меню" onclick="toggleCollapseSidebar()">
+        <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
       </button>
+      <button class="close-sidebar-btn" onclick="toggleSidebar(false)">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
 
-      <div class="nav-links">
-        <div class="side-nav-item active" id="nav-chat" onclick="switchSection('chat')">
-          <div class="side-nav-left">
-            <svg class="ico" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            <span>Чат с ИИ</span>
-          </div>
-        </div>
-        <div class="side-nav-item" id="nav-shop" onclick="switchSection('shop')">
-          <div class="side-nav-left">
-            <svg class="ico" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            <span>Подписка и пакеты</span>
-          </div>
-          <span class="pro-shimmer-badge">PRO</span>
-        </div>
-        <div class="side-nav-item" id="nav-profile" onclick="switchSection('profile')">
-          <div class="side-nav-left">
-            <svg class="ico" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span>Профиль и партнёрка</span>
-          </div>
-        </div>
-        <div class="side-nav-item" id="nav-admin" style="display:none" onclick="switchSection('admin')">
-          <div class="side-nav-left">
-            <svg class="ico" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-            <span>Админ-панель</span>
-          </div>
+    <button class="new-chat-btn" onclick="startNewChat()">
+      <svg class="ico" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+      <span>Новый чат</span>
+    </button>
+
+    <div class="nav-links">
+      <div class="side-nav-item active" id="nav-chat" onclick="switchSection('chat')">
+        <div class="side-nav-left">
+          <svg class="ico" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span>Чат с ИИ</span>
         </div>
       </div>
-
-      <div class="history-label">
-        <span>Недавние чаты</span>
-        <span style="cursor:pointer;font-size:11px;text-transform:none" onclick="clearAllSessions()">Очистить</span>
-      </div>
-
-      <div id="historyList" class="history-list"></div>
-
-      <!-- НИЖНИЙ БЛОК: АВАТАРКА ПРОФИЛЯ + ИМЯ + НАСТРОЙКИ ТЕМЫ -->
-      <div class="sidebar-footer">
-        <div class="user-mini-card" onclick="switchSection('profile')">
-          <div class="user-avatar-wrap" id="sideAvatarRing">
-            <img id="sideUserAvatarImg" class="user-avatar-img" alt="Avatar" />
-            <span id="sideUserAvatarLetter" class="user-avatar-letter">Д</span>
-          </div>
-          <div style="min-width:0">
-            <div class="user-mini-name" id="sideUserName">Пользователь</div>
-            <div class="user-mini-plan" id="sideUserPlan">Free</div>
-          </div>
+      <div class="side-nav-item" id="nav-shop" onclick="switchSection('shop')">
+        <div class="side-nav-left">
+          <svg class="ico" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span>Подписка и пакеты</span>
         </div>
-        <button class="settings-gear-btn" title="Настройки" onclick="openModal('settingsModal')">
-          <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        </button>
+        <span class="pro-shimmer-badge">PRO</span>
       </div>
-    </aside>
+      <div class="side-nav-item" id="nav-profile" onclick="switchSection('profile')">
+        <div class="side-nav-left">
+          <svg class="ico" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Профиль и партнёрка</span>
+        </div>
+      </div>
+      <div class="side-nav-item" id="nav-admin" style="display:none" onclick="switchSection('admin')">
+        <div class="side-nav-left">
+          <svg class="ico" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          <span>Админ-панель</span>
+        </div>
+      </div>
+    </div>
 
+    <div class="history-label">
+      <span>Недавние чаты</span>
+      <span style="cursor:pointer;font-size:11px;text-transform:none" onclick="clearAllSessions()">Очистить</span>
+    </div>
+
+    <div id="historyList" class="history-list"></div>
+
+    <!-- НИЖНИЙ БЛОК: АВАТАРКА ПРОФИЛЯ + ИМЯ + НАСТРОЙКИ ТЕМЫ -->
+    <div class="sidebar-footer">
+      <div class="user-mini-card" onclick="switchSection('profile')">
+        <div class="user-avatar-wrap" id="sideAvatarRing">
+          <img id="sideUserAvatarImg" class="user-avatar-img" alt="Avatar" />
+          <span id="sideUserAvatarLetter" class="user-avatar-letter">Д</span>
+        </div>
+        <div style="min-width:0">
+          <div class="user-mini-name" id="sideUserName">Пользователь</div>
+          <div class="user-mini-plan" id="sideUserPlan">Free</div>
+        </div>
+      </div>
+      <button class="settings-gear-btn" title="Настройки" onclick="openModal('settingsModal')">
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l-.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <div class="app-shell">
     <!-- ==================== ПРАВАЯ ОСНОВНАЯ ОБЛАСТЬ ==================== -->
     <main class="main-stage">
       <!-- ВЕРХНЯЯ ПАНЕЛЬ -->
@@ -1803,9 +1836,15 @@
           </button>
         </div>
 
-        <div class="quota-badge" id="topQuotaBadge" onclick="switchSection('shop')">
-          <svg class="ico" style="width:14px;height:14px;color:#fbbf24" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          <span id="topQuotaText">5 запр.</span>
+        <div class="topbar-right">
+          <div class="quota-badge" id="topQuotaBadge" onclick="switchSection('shop')">
+            <svg class="ico" style="width:14px;height:14px;color:#fbbf24" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span id="topQuotaText">5 запр.</span>
+          </div>
+          <!-- Кнопка полного экрана для ПК -->
+          <button class="fullscreen-pc-btn" id="pcFullscreenBtn" title="На весь экран" onclick="togglePcFullscreen()">
+            <svg class="ico" style="width:15px;height:15px" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+          </button>
         </div>
       </header>
 
@@ -2163,7 +2202,7 @@
     if (urlParams.get("api")) localStorage.setItem("aether_api_base", API_BASE);
 
     // =========================================================================
-    // 2. TELEGRAM WEBAPP & АВТОРИЗАЦИЯ ДЛЯ ОБЫЧНОГО БРАУЗЕРА (GOOGLE / WEB)
+    // 2. TELEGRAM WEBAPP (ПОЛНЫЙ ЭКРАН И НА ПК, И НА ТЕЛЕФОНЕ) + ЗАЩИЩЁННЫЙ ВХОД
     // =========================================================================
     const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
     const isInsideTelegram = Boolean(tg && tg.initData && tg.initData.length > 0 && tg.initDataUnsafe?.user?.id);
@@ -2171,59 +2210,182 @@
     if (tg) {
       tg.ready();
       tg.expand();
-      const platform = (tg.platform || "").toLowerCase();
-      const isMobileTg = (platform === "android" || platform === "ios") && isInsideTelegram;
-      if (isMobileTg && typeof tg.requestFullscreen === "function") {
+      // Включаем полный экран везде (и в Telegram Desktop на ПК, и на телефонах)
+      if (isInsideTelegram && typeof tg.requestFullscreen === "function") {
         try { tg.requestFullscreen(); } catch (e) {}
       }
     }
 
+    // Кнопка полного экрана для ПК (вызывает tg.requestFullscreen() внутри Telegram Desktop или Fullscreen API в браузере)
+    // Горячая клавиша F11 на ПК переключает полноэкранный режим
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key === "F11") {
+        ev.preventDefault();
+        togglePcFullscreen();
+      }
+    });
+
+    function togglePcFullscreen() {
+      triggerHapticLight();
+      if (isInsideTelegram && tg) {
+        try {
+          if (tg.isFullscreen && typeof tg.exitFullscreen === "function") {
+            tg.exitFullscreen();
+          } else if (typeof tg.requestFullscreen === "function") {
+            tg.requestFullscreen();
+          } else {
+            tg.expand();
+          }
+          return;
+        } catch (e) {}
+      }
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.().catch(() => {});
+      } else {
+        document.exitFullscreen?.().catch(() => {});
+      }
+    }
+
+    // Колбэк официального Telegram Login Widget (криптографически подписанный hash от Telegram)
+    window.onTelegramAuth = async function(tgUser) {
+      if (!tgUser || !tgUser.id || !tgUser.hash) return;
+      try {
+        const res = await fetch(API_BASE + "/api/auth/telegram-widget", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(tgUser)
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok || !data.token) {
+          throw new Error(data.error || "Ошибка проверки подписи Telegram");
+        }
+        localStorage.setItem("aether_web_token", data.token);
+        localStorage.setItem("aether_web_uid", String(tgUser.id));
+        localStorage.setItem("aether_web_name", tgUser.first_name || tgUser.username || "Пользователь");
+        if (tgUser.photo_url) localStorage.setItem("aether_web_photo", tgUser.photo_url);
+
+        STATE.user_id = Number(tgUser.id);
+        STATE.web_token = data.token;
+        STATE.full_name = tgUser.first_name || tgUser.username || "Пользователь";
+        STATE.photo_url = tgUser.photo_url || "";
+
+        document.getElementById("webAuthGate").classList.remove("active");
+        document.getElementById("webLogoutBtn").style.display = "inline-flex";
+        triggerHapticSuccess();
+        showToast("Вход через Telegram выполнен");
+        await initApp();
+      } catch (e) {
+        showToast(e.message);
+      }
+    };
+
+    function mountTelegramLoginWidget() {
+      const slot = document.getElementById("tgLoginWidgetContainer");
+      if (!slot || slot.dataset.mounted === "1") return;
+      slot.dataset.mounted = "1";
+      const s = document.createElement("script");
+      s.async = true;
+      s.src = "https://telegram.org/js/telegram-widget.js?22";
+      s.setAttribute("data-telegram-login", BOT_USERNAME);
+      s.setAttribute("data-size", "large");
+      s.setAttribute("data-radius", "12");
+      s.setAttribute("data-onauth", "onTelegramAuth(user)");
+      s.setAttribute("data-request-access", "write");
+      slot.appendChild(s);
+    }
+
     function checkWebBrowserAuth() {
-      // Если открыто внутри Telegram — авторизация уже есть
+      // 1. Внутри Telegram Mini App авторизация подтверждена криптографическим initData
       if (isInsideTelegram) {
         document.getElementById("webAuthGate").classList.remove("active");
         return true;
       }
 
-      // Проверяем ?uid=... в ссылке (если бот дал прямую ссылку для браузера) или сохранённый ID
-      const paramUid = urlParams.get("uid") || urlParams.get("user_id");
-      if (paramUid && Number(paramUid) > 0) {
-        localStorage.setItem("aether_web_uid", String(Number(paramUid)));
+      // 2. Проверяем одноразовый токен ?token=... из ссылки бота (после подтверждения в Telegram)
+      const urlToken = urlParams.get("token") || urlParams.get("auth_token");
+      const urlUid = urlParams.get("uid");
+      if (urlToken && urlToken.length >= 16) {
+        localStorage.setItem("aether_web_token", urlToken);
+        if (urlUid) localStorage.setItem("aether_web_uid", String(Number(urlUid)));
+        // Очищаем токен из адресной строки
+        try {
+          const cleanUrl = window.location.origin + window.location.pathname;
+          window.history.replaceState({}, document.title, cleanUrl);
+        } catch (e) {}
       }
 
-      const savedWebUid = Number(localStorage.getItem("aether_web_uid") || "0");
-      if (savedWebUid > 0) {
-        STATE.user_id = savedWebUid;
+      // 3. Проверяем сохранённый токен сессии (вход по голому ID без токена больше невозможен!)
+      const savedToken = localStorage.getItem("aether_web_token") || "";
+      const savedUid = Number(localStorage.getItem("aether_web_uid") || "0");
+      if (savedToken.length >= 16 && savedUid > 0) {
+        STATE.user_id = savedUid;
+        STATE.web_token = savedToken;
+        STATE.full_name = localStorage.getItem("aether_web_name") || "Пользователь";
+        STATE.photo_url = localStorage.getItem("aether_web_photo") || "";
         document.getElementById("webAuthGate").classList.remove("active");
         document.getElementById("webLogoutBtn").style.display = "inline-flex";
         return true;
       }
 
-      // Показываем экран авторизации через Telegram для гостей из браузера
+      // 4. Показываем окно авторизации через Telegram
       document.getElementById("tgBotLoginLink").href = `https://t.me/${BOT_USERNAME}?start=web_auth`;
+      mountTelegramLoginWidget();
       document.getElementById("webAuthGate").classList.add("active");
       return false;
     }
 
-    async function submitWebIdAuth() {
-      const inp = document.getElementById("webAuthIdInput");
-      const uid = Number((inp.value || "").trim());
-      if (!uid || uid < 1000) {
-        showToast("Введи корректный числовой Telegram ID");
+    // Вход по одноразовому коду, который бот выдаёт лично владельцу аккаунта в Telegram
+    async function submitWebOneTimeCode() {
+      const inp = document.getElementById("webAuthCodeInput");
+      const btn = document.getElementById("webAuthCodeBtn");
+      const code = (inp.value || "").trim().toUpperCase();
+      if (code.length < 4) {
+        showToast("Введи одноразовый код из Telegram-бота");
         return;
       }
-      localStorage.setItem("aether_web_uid", String(uid));
-      STATE.user_id = uid;
-      document.getElementById("webAuthGate").classList.remove("active");
-      document.getElementById("webLogoutBtn").style.display = "inline-flex";
-      triggerHapticSuccess();
-      showToast("Вход выполнен");
-      await initApp();
+
+      btn.disabled = true;
+      btn.textContent = "Проверка...";
+      try {
+        const res = await fetch(API_BASE + "/api/auth/verify-code", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok || !data.token || !data.user_id) {
+          throw new Error(data.error || "Неверный или просроченный код");
+        }
+
+        localStorage.setItem("aether_web_token", data.token);
+        localStorage.setItem("aether_web_uid", String(data.user_id));
+        if (data.full_name) localStorage.setItem("aether_web_name", data.full_name);
+
+        STATE.user_id = Number(data.user_id);
+        STATE.web_token = data.token;
+        STATE.full_name = data.full_name || "Пользователь";
+
+        inp.value = "";
+        document.getElementById("webAuthGate").classList.remove("active");
+        document.getElementById("webLogoutBtn").style.display = "inline-flex";
+        triggerHapticSuccess();
+        showToast("Авторизация подтверждена");
+        await initApp();
+      } catch (e) {
+        showToast(e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Войти";
+      }
     }
 
     function logoutWebSession() {
+      localStorage.removeItem("aether_web_token");
       localStorage.removeItem("aether_web_uid");
+      localStorage.removeItem("aether_web_name");
+      localStorage.removeItem("aether_web_photo");
       STATE.user_id = 0;
+      STATE.web_token = "";
       checkWebBrowserAuth();
     }
 
@@ -2490,8 +2652,9 @@
 
     let STATE = {
       user_id: tg?.initDataUnsafe?.user?.id || Number(localStorage.getItem("aether_web_uid") || "0"),
-      full_name: "Пользователь",
-      photo_url: tg?.initDataUnsafe?.user?.photo_url || "",
+      web_token: localStorage.getItem("aether_web_token") || "",
+      full_name: localStorage.getItem("aether_web_name") || "Пользователь",
+      photo_url: tg?.initDataUnsafe?.user?.photo_url || localStorage.getItem("aether_web_photo") || "",
       is_admin: false,
       is_pro: false,
       selected_model: localStorage.getItem("selected_model") || "gpt-6-luna",
@@ -2507,22 +2670,28 @@
     };
 
     // =========================================================================
-    // 7. ЛОКАЛЬНАЯ ИСТОРИЯ ЧАТОВ (БЕЗОПАСНОЕ СОХРАНЕНИЕ БЕЗ ПЕРЕПОЛНЕНИЯ КВОТЫ)
+    // 7. ЛОКАЛЬНАЯ ИСТОРИЯ ЧАТОВ (ПРИВЯЗАНА К USER_ID)
     // =========================================================================
+    function getSessionsStorageKey() {
+      return STATE.user_id ? `ai_chat_sessions_${STATE.user_id}` : "ai_chat_sessions";
+    }
+
     let SESSIONS = [];
-    try {
-      SESSIONS = JSON.parse(localStorage.getItem("ai_chat_sessions") || "[]");
-      if (!Array.isArray(SESSIONS)) SESSIONS = [];
-    } catch (e) {
-      SESSIONS = [];
+    function loadSessionsFromStorage() {
+      try {
+        SESSIONS = JSON.parse(localStorage.getItem(getSessionsStorageKey()) || "[]");
+        if (!Array.isArray(SESSIONS)) SESSIONS = [];
+      } catch (e) {
+        SESSIONS = [];
+      }
     }
 
     let CURRENT_SESSION_ID = null;
     let ACTIVE_STREAM_TIMER = null;
 
     function saveSessions() {
+      const key = getSessionsStorageKey();
       try {
-        // Не сохраняем тяжёлые base64-картинки в localStorage, чтобы не превысить лимит 5 МБ на телефоне
         const lightweight = SESSIONS.slice(0, 35).map(s => ({
           id: s.id,
           title: s.title,
@@ -2534,11 +2703,10 @@
             modelCat: m.modelCat
           }))
         }));
-        localStorage.setItem("ai_chat_sessions", JSON.stringify(lightweight));
+        localStorage.setItem(key, JSON.stringify(lightweight));
       } catch (e) {
-        // Если память всё же забита — оставляем последние 10 диалогов
         try {
-          localStorage.setItem("ai_chat_sessions", JSON.stringify(SESSIONS.slice(0, 10)));
+          localStorage.setItem(key, JSON.stringify(SESSIONS.slice(0, 10)));
         } catch (e2) {}
       }
       renderHistorySidebar();
@@ -2970,7 +3138,7 @@
     }
 
     // =========================================================================
-    // 10. ВЫБОР МОДЕЛЕЙ И НАВИГАЦИЯ (ФИКС СВОРАЧИВАНИЯ ШТОРКИ НА ТЕЛЕФОНЕ)
+    // 10. ВЫБОР МОДЕЛЕЙ И НАВИГАЦИЯ (МОБИЛЬНАЯ ШТОРКА РАБОТАЕТ БЕЗ ЗАТЕМНЕНИЯ)
     // =========================================================================
     function openModelSelector() {
       triggerHapticLight();
@@ -3049,7 +3217,7 @@
       const sb = document.getElementById("sidebar");
       const bd = document.getElementById("mobileBackdrop");
       if (open) {
-        // На телефоне гарантированно снимаем класс collapsed, чтобы текст и история не прятались
+        triggerHapticLight();
         sb.classList.remove("collapsed");
         renderHistorySidebar();
         sb.classList.add("open");
@@ -3080,11 +3248,16 @@
         headers: {
           "Content-Type": "application/json",
           "X-Telegram-Init-Data": tg?.initData || "",
+          "X-Web-Auth-Token": STATE.web_token || "",
           "X-User-Id": String(STATE.user_id || "")
         },
         body: body ? JSON.stringify(body) : null
       });
       const data = await res.json();
+      if (res.status === 401 && !isInsideTelegram) {
+        logoutWebSession();
+        throw new Error("Сессия истекла, войди через Telegram заново");
+      }
       if (!res.ok || data.ok === false) throw new Error(data.error || ("HTTP " + res.status));
       return data;
     }
@@ -3198,18 +3371,46 @@
       return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
+    async function syncServerHistoryIfNeeded() {
+      try {
+        const res = await apiRequest("/api/history", "GET");
+        if (!res.messages || !res.messages.length) return;
+        const serverSessId = "server_sync_" + (STATE.user_id || "0");
+        const mapped = res.messages.map(m => ({
+          role: m.role === "assistant" ? "ai" : "user",
+          text: m.content || "",
+          modelName: m.role === "assistant" ? "Aether AI" : "",
+          modelCat: "gpt"
+        }));
+        const firstUserMsg = mapped.find(m => m.role === "user");
+        const title = firstUserMsg ? firstUserMsg.text.slice(0, 36) : "Диалог из Telegram";
+        const existingIdx = SESSIONS.findIndex(s => s.id === serverSessId);
+        const sessObj = { id: serverSessId, title, messages: mapped };
+        if (existingIdx >= 0) {
+          SESSIONS[existingIdx] = sessObj;
+        } else {
+          SESSIONS.unshift(sessObj);
+        }
+        saveSessions();
+      } catch (e) {}
+    }
+
     async function initApp() {
       initSavedAppearance();
       if (!checkWebBrowserAuth()) return;
 
+      loadSessionsFromStorage();
       document.getElementById("welcomeGreetingText").textContent = getRandomGreeting(getUserDisplayName());
       renderHistorySidebar();
       syncUI();
       try {
         const me = await apiRequest("/api/me");
         STATE = { ...STATE, ...me };
+        loadSessionsFromStorage();
         document.getElementById("welcomeGreetingText").textContent = getRandomGreeting(getUserDisplayName());
+        renderHistorySidebar();
         syncUI();
+        await syncServerHistoryIfNeeded();
       } catch (e) {}
     }
 
